@@ -31,6 +31,7 @@
       top: 10px;
       left: 10px;
       margin: 0;
+      z-index: 5;
     }
     body.light-mode h1 {
       color: #ff6f61;
@@ -38,8 +39,9 @@
     h2 {
       font-size: 1.2em;
       color: #ffb347;
-      margin: 60px 0 8px;
+      margin: 55px 0 6px;
       text-align: center;
+      z-index: 10;
     }
     body.light-mode h2 {
       color: #ff6f61;
@@ -50,7 +52,9 @@
       gap: 6px;
       justify-content: center;
       margin: 0 0 10px;
-      padding-top: 10px;
+      padding: 10px 0;
+      min-height: 60px;
+      z-index: 10;
     }
     .letters button {
       padding: 10px;
@@ -65,6 +69,8 @@
       touch-action: manipulation;
       min-width: 42px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      opacity: 1;
+      visibility: visible;
     }
     body.light-mode .letters button {
       background: rgba(255, 202, 40, 0.8);
@@ -91,13 +97,15 @@
       font-weight: bold;
       background: rgba(68, 68, 68, 0.8);
       backdrop-filter: blur(8px);
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      margin: 8px 0;
+      margin: 6px 0;
       transition: font-family 0.3s, font-size 0.3s;
       text-align: center;
       cursor: pointer;
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
     .word.cursive {
       font-family: 'Dancing Script', cursive;
@@ -108,7 +116,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .word .highlight {
-      font-weight: bold;
       color: #ff6f61;
     }
     body.light-mode .word .highlight {
@@ -120,13 +127,15 @@
       color: #ccc;
       background: rgba(68, 68, 68, 0.8);
       backdrop-filter: blur(8px);
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 10px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      margin: 8px 0;
+      margin: 6px 0;
       transition: font-family 0.3s;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       text-align: center;
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
     .syllables.cursive {
       font-family: 'Dancing Script', cursive;
@@ -137,7 +146,6 @@
       color: #555;
     }
     .syllables .highlight {
-      font-weight: bold;
       color: #ff6f61;
     }
     body.light-mode .syllables .highlight {
@@ -155,8 +163,8 @@
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
-      margin: 6px 0;
-      padding: 6px;
+      margin: 4px 0;
+      padding: 5px;
       background: rgba(51, 51, 51, 0.8);
       backdrop-filter: blur(8px);
       border-radius: 12px;
@@ -239,6 +247,7 @@
       position: absolute;
       top: 10px;
       right: 10px;
+      z-index: 5;
     }
     .dark-toggle input {
       display: none;
@@ -279,23 +288,28 @@
       }
       h2 {
         font-size: 1.1em;
-        margin: 50px 0 6px;
+        margin: 45px 0 5px;
+      }
+      .letters {
+        gap: 5px;
+        padding: 8px 0;
+        min-height: 50px;
       }
       .letters button {
-        padding: 7px;
+        padding: 8px;
         font-size: 13px;
-        min-width: 36px;
+        min-width: 38px;
       }
       .word {
         font-size: 56px;
-        padding: 10px 14px;
+        padding: 8px 12px;
       }
       .word.cursive {
         font-size: 60px;
       }
       .syllables {
         font-size: 34px;
-        padding: 6px 10px;
+        padding: 5px 8px;
       }
       .syllables.cursive {
         font-size: 38px;
@@ -310,7 +324,7 @@
         font-size: 22px;
       }
       .navigation-controls {
-        padding: 5px;
+        padding: 4px;
         gap: 6px;
       }
       .controls.bottom {
@@ -359,7 +373,7 @@
 
   <div class="feedback" id="feedback"></div>
 
-  <footer>Esta app la desarrolló Luis Rodrigo Cuesta</footer>
+  <footer>LRC MAS IA</footer>
 
   <audio id="soundCorrect" src="https://cdn.pixabay.com/audio/2022/03/15/audio_fce3e63e04.mp3"></audio>
   <audio id="soundWrong" src="https://cdn.pixabay.com/audio/2022/03/15/audio_9e28057438.mp3"></audio>
@@ -413,12 +427,17 @@
     let wordHistory = [];
     let historyIndex = -1;
 
-    allLetters.forEach(letter => {
-      const btn = document.createElement("button");
-      btn.textContent = letter;
-      btn.onclick = () => toggleLetter(letter, btn);
-      letterContainer.appendChild(btn);
-    });
+    if (!letterContainer) {
+      console.error("Contenedor #letters no encontrado");
+    } else {
+      allLetters.forEach(letter => {
+        console.log("Creando botón para:", letter);
+        const btn = document.createElement("button");
+        btn.textContent = letter;
+        btn.onclick = () => toggleLetter(letter, btn);
+        letterContainer.appendChild(btn);
+      });
+    }
 
     function toggleLetter(letter, btn) {
       if (currentLetters.includes(letter)) {
@@ -435,6 +454,8 @@
       const vowels = /[aeiouáéíóú]/i;
       const strongVowels = /[aáeéoó]/i;
       const weakVowels = /[iíuú]/i;
+      const consonants = /[bcdfghjklmnñpqrstvwxyz]/i;
+      const diphthongs = /(ai|ei|oi|au|eu|iu|ui|ay|ey|oy|uy)/i;
       let syllables = [];
       let currentSyllable = "";
       let i = 0;
@@ -443,25 +464,29 @@
         currentSyllable += word[i];
 
         if (vowels.test(word[i])) {
-          if (i + 1 < word.length && vowels.test(word[i + 1])) {
-            if ((weakVowels.test(word[i]) && strongVowels.test(word[i + 1])) ||
-                (strongVowels.test(word[i]) && weakVowels.test(word[i + 1])) ||
-                (weakVowels.test(word[i]) && weakVowels.test(word[i + 1]))) {
-              currentSyllable += word[i + 1];
-              i += 2;
-            } else {
-              syllables.push(currentSyllable);
-              currentSyllable = "";
-              i++;
-            }
+          let nextChar = word[i + 1] || '';
+          let nextNextChar = word[i + 2] || '';
+
+          if (nextChar && diphthongs.test(word.slice(i, i + 2))) {
+            currentSyllable += nextChar;
+            i += 2;
+          } else if (nextChar && vowels.test(nextChar) && 
+                    ((strongVowels.test(word[i]) && strongVowels.test(nextChar)) ||
+                     (weakVowels.test(word[i]) && weakVowels.test(nextChar)))) {
+            syllables.push(currentSyllable);
+            currentSyllable = "";
+            i++;
           } else {
             syllables.push(currentSyllable);
             currentSyllable = "";
             i++;
-            if (i < word.length && /[bcdfghjklmnñpqrstvwxyz]/i.test(word[i])) {
+            if (i < word.length && consonants.test(word[i])) {
               currentSyllable += word[i];
               i++;
-              if (i < word.length && /[lnr]/i.test(word[i - 1]) && /[bcdfghjklmnñpqrstvwxyz]/i.test(word[i])) {
+              if (i < word.length && 
+                  ((word[i - 1] === 'r' && word[i] === 'r') ||
+                   (word[i - 1] === 'l' && word[i] === 'l') ||
+                   /[bcdfghjklmnpqrstvwxyz]/.test(word[i]))) {
                 currentSyllable += word[i];
                 i++;
               }
@@ -469,6 +494,9 @@
           }
         } else {
           i++;
+          if (i < word.length && word[i - 1] === 'h' && vowels.test(word[i])) {
+            currentSyllable = word[i - 1] + currentSyllable;
+          }
         }
       }
 
@@ -484,7 +512,7 @@
       let result = text;
       letters.forEach(letter => {
         const regex = new RegExp(`(${letter})`, 'gi');
-        result = result.replace(regex, '<b class="highlight">$1</b>');
+        result = result.replace(regex, '<span class="highlight">$1</span>');
       });
       return result;
     }
@@ -577,11 +605,16 @@
     function updateDisplay() {
       const displayWord = currentWord ? (uppercaseToggle.checked ? currentWord.toUpperCase() : currentWord) : "---";
       const { text: syllableText } = currentWord ? syllabify(displayWord) : { text: "---" };
+      const fontSize = currentWord && currentWord.length > 6 ? '90%' : '100%';
+      wordDisplay.style.fontSize = `calc(72px * ${fontSize})`;
       wordDisplay.innerHTML = currentWord ? highlightLetters(displayWord, currentLetters) : "---";
+      syllablesDisplay.style.fontSize = `calc(44px * ${fontSize})`;
       syllablesDisplay.innerHTML = currentWord ? highlightLetters(syllableText, currentLetters) : "---";
       if (italicToggle.checked) {
         wordDisplay.classList.add('cursive');
         syllablesDisplay.classList.add('cursive');
+        wordDisplay.style.fontSize = `calc(78px * ${fontSize})`;
+        syllablesDisplay.style.fontSize = `calc(48px * ${fontSize})`;
       } else {
         wordDisplay.classList.remove('cursive');
         syllablesDisplay.classList.remove('cursive');
