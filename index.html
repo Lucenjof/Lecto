@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lecto</title>
+  <title>JULIA LEE</title>
   <style>
     body {
-      font-family: 'Comic Sans MS', cursive;
+      font-family: 'Arial', sans-serif;
       padding: 20px;
       background: #fffbf2;
       color: #333;
@@ -129,7 +129,7 @@
   </style>
 </head>
 <body>
-  <h1>Lecto 📚🧠🐤</h1>
+  <h1>JULIA LEE 📚🧠🐤</h1>
 
   <div class="dark-toggle">
     <label><input type="checkbox" id="darkModeToggle" /> 🌙 Modo oscuro</label>
@@ -145,6 +145,7 @@
 
   <div class="controls">
     <label><input type="checkbox" id="uppercaseToggle" /> Mayúsculas</label>
+    <label><input type="checkbox" id="italicToggle" /> ✍️ Cursiva</label>
     <button onclick="speakWord()">🔊 Escuchar</button>
     <button onclick="nextWord()">➡️ Siguiente</button>
     <button onclick="nextWordWithSelectedLetters()">📋 Palabras con letras seleccionadas</button>
@@ -171,6 +172,7 @@
     const userInput = document.getElementById("userInput");
     const feedback = document.getElementById("feedback");
     const uppercaseToggle = document.getElementById("uppercaseToggle");
+    const italicToggle = document.getElementById("italicToggle");
     const darkModeToggle = document.getElementById("darkModeToggle");
     const soundCorrect = document.getElementById("soundCorrect");
     const soundWrong = document.getElementById("soundWrong");
@@ -319,9 +321,11 @@
 
     function updateDisplay() {
       wordDisplay.textContent = uppercaseToggle.checked && currentWord ? currentWord.toUpperCase() : currentWord;
+      wordDisplay.style.fontStyle = italicToggle.checked ? 'italic' : 'normal';
     }
 
     uppercaseToggle.onchange = updateDisplay;
+    italicToggle.onchange = updateDisplay;
 
     function checkAnswer() {
       if (!currentWord) {
