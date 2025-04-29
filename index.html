@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecto</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive;
+      padding: 20px;
+      background: #fffbf2;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background 0.3s, color 0.3s;
+      min-height: 100vh;
+    }
+    body.dark-mode {
+      background: #222;
+      color: #f0f0f0;
+    }
+    h1 {
+      font-size: 3em;
+      color: #ff6f61;
+    }
+    body.dark-mode h1 {
+      color: #ffb347;
+    }
+    h2 {
+      font-size: 1.8em;
+      color: #ff6f61;
+      margin-bottom: 10px;
+    }
+    body.dark-mode h2 {
+      color: #ffb347;
+    }
+    .letters, .difficulty, .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .letters button, .difficulty button {
+      padding: 12px 16px;
+      font-size: 20px;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      background-color: #fff0c1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    body.dark-mode .letters button,
+    body.dark-mode .difficulty button {
+      background-color: #444;
+      color: #f0f0f0;
+    }
+    .letters button:hover, .difficulty button:hover {
+      transform: scale(1.05);
+    }
+    .letters button.active {
+      background-color: #ff6f61;
+      color: white;
+      font-weight: bold;
+      font-size: 22px;
+      border: 2px solid #d94f43;
+      box-shadow: 0 0 8px rgba(255, 111, 97, 0.7);
+      transform: scale(1.1);
+    }
+    body.dark-mode .letters button.active {
+      background-color: #ffb347;
+      border: 2px solid #cc8c2c;
+      box-shadow: 0 0 8px rgba(255, 179, 71, 0.7);
+    }
+    .difficulty button.active {
+      background-color: #ffb347;
+      color: white;
+      font-weight: bold;
+    }
+    .word {
+      font-size: 50px;
+      font-weight: bold;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      margin: 20px 0;
+    }
+    body.dark-mode .word {
+      background: #333;
+    }
+    input[type="text"] {
+      padding: 12px;
+      font-size: 18px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 16px;
+      background-color: #ffb347;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #f28c28;
+    }
+    .feedback {
+      font-weight: bold;
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    .dark-toggle {
+      margin-bottom: 20px;
+    }
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      font-size: 16px;
+      color: #ff6f61;
+      text-align: center;
+    }
+    body.dark-mode footer {
+      color: #ffb347;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lecto 📚🧠🐤</h1>
+
+  <div class="dark-toggle">
+    <label><input type="checkbox" id="darkModeToggle" /> 🌙 Modo oscuro</label>
+  </div>
+
+  <div class="difficulty">
+    <button onclick="setDifficulty('easy')" id="easyBtn">Fácil</button>
+    <button onclick="setDifficulty('hard')" id="hardBtn">Difícil</button>
+  </div>
+
+  <h2>Selecciona letra/s a practicar</h2>
+  <div class="letters" id="letters"></div>
+
+  <div class="controls">
+    <label><input type="checkbox" id="uppercaseToggle" /> Mayúsculas</label>
+    <button onclick="speakWord()">🔊 Escuchar</button>
+    <button onclick="nextWord()">➡️ Siguiente</button>
+    <button onclick="nextWordWithSelectedLetters()">📋 Palabras con letras seleccionadas</button>
+  </div>
+
+  <div class="word" id="wordDisplay">---</div>
+
+  <div class="controls">
+    <input type="text" id="userInput" placeholder="Escribe la palabra" />
+    <button onclick="checkAnswer()">Verificar</button>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <footer>Esta app la desarrolló Luis Rodrigo Cuesta</footer>
+
+  <audio id="soundCorrect" src="https://cdn.pixabay.com/audio/2022/03/15/audio_fce3e63e04.mp3"></audio>
+  <audio id="soundWrong" src="https://cdn.pixabay.com/audio/2022/03/15/audio_9e28057438.mp3"></audio>
+
+  <script>
+    const allLetters = "abcdefghijklmnñopqrstuvwxyz".split("");
+    const letterContainer = document.getElementById("letters");
+    const wordDisplay = document.getElementById("wordDisplay");
+    const userInput = document.getElementById("userInput");
+    const feedback = document.getElementById("feedback");
+    const uppercaseToggle = document.getElementById("uppercaseToggle");
+    const darkModeToggle = document.getElementById("darkModeToggle");
+    const soundCorrect = document.getElementById("soundCorrect");
+    const soundWrong = document.getElementById("soundWrong");
+
+    const easyWords = {
+      a: ["ala", "amor", "agua", "abeja", "arbol", "anillo", "avión", "arena", "auto", "azul"],
+      b: ["bola", "burro", "boca", "bebé", "bote", "baila", "barco", "banco", "beso", "buzo"],
+      c: ["casa", "coco", "cielo", "carro", "conejo", "cama", "circo", "cinta", "cuadro", "sopa", "paso"],
+      d: ["dado", "día", "duda", "dulce", "diente", "dama", "deporte", "dedo", "dormir", "dibujo"],
+      e: ["eco", "edad", "ella", "elefante", "estrella", "espejo", "escoba", "escala", "espada", "sopa", "paso"],
+      f: ["foca", "faro", "fresa", "flor", "fiesta", "fruta", "fuego", "falda", "flecha", "fácil"],
+      g: ["gato", "goma", "gota", "globo", "gallo", "gorra", "gusano", "gafas", "guitarra", "gema"],
+      h: ["hola", "hilo", "hora", "huevo", "hoja", "hueso", "helado", "hermano", "hacha", "humo"],
+      i: ["idea", "iglu", "iris", "isla", "imán", "invierno", "iglesia", "iguana", "imagen", "inicio"],
+      j: ["jugo", "jota", "juez", "juego", "jarra", "jardín", "joya", "jirafa", "jabón", "joven"],
+      k: ["koala", "kilo", "karate", "kiwi", "kiosco", "ketchup"],
+      l: ["luz", "lago", "luna", "león", "libro", "lápiz", "limón", "lazo", "leche", "lento"],
+      m: ["mesa", "mano", "miel", "mono", "música", "mariposa", "moto", "mundo", "magia", "marea"],
+      n: ["nube", "nene", "nuez", "nido", "nariz", "navidad", "naranja", "nieto", "noche", "nave"],
+      ñ: ["niña", "año", "ñandú", "niño", "ñapa", "ñu"],
+      o: ["ola", "ojo", "oro", "oso", "oveja", "olivo", "oreja", "ogro", "olmo", "sopa", "paso"],
+      p: ["pato", "palo", "puma", "perro", "pez", "puerta", "pincel", "sopa", "paso", "piso", "plato"],
+      q: ["queso", "quinto", "quiosco", "quema", "quince", "quitar"],
+      r: ["rana", "rueda", "río", "ratón", "rosa", "rey", "reloj", "risa", "roca", "rama"],
+      s: ["sol", "sopa", "sala", "sapo", "silla", "sombrero", "sueño", "paso", "piso", "salto", "siete"],
+      t: ["taza", "toro", "tina", "tigre", "torta", "tren", "tulipán", "tela", "templo", "tinta"],
+      u: ["uva", "uno", "uña", "unicornio", "uniforme", "usar", "urbano", "unir", "ultimo", "sopa"],
+      v: ["vaca", "voto", "velo", "viento", "volar", "vidrio", "viaje", "vivo", "vuelo", "verde"],
+      w: ["wafle", "web", "whisky", "wifi"],
+      x: ["xilófono", "xeno", "xalapa"],
+      y: ["yema", "yoyo", "yate", "yogur", "yeso", "yunque", "yogui"],
+      z: ["zapato", "zorro", "zoo", "zanahoria", "zigzag", "zumo", "zamba", "zona"]
+    };
+
+    const hardWords = {
+      a: ["altura", "asno", "andar", "aventura", "almohada", "aniversario", "artículo", "arquitectura", "atención", "ambiente"],
+      b: ["bravo", "botón", "barriga", "biblioteca", "burbuja", "bufanda", "bandera", "beneficio", "baloncesto", "biodiversidad"],
+      c: ["cuchara", "clase", "correr", "castillo", "cometa", "cocodrilo", "compás", "computadora", "conversación", "serpiente", "espectro"],
+      d: ["dedal", "dulzura", "doblar", "dinosaurio", "descanso", "diploma", "dibujo", "democracia", "desafío", "disciplina"],
+      e: ["estrella", "espuma", "esfera", "escritorio", "elección", "escalera", "estudio", "experiencia", "electricidad", "serpiente", "espectro"],
+      f: ["fragancia", "fuerza", "fútbol", "familia", "fantasía", "fotografía", "frontera", "filosofía", "frecuencia", "formación"],
+      g: ["guitarra", "goloso", "grande", "gabinete", "generoso", "gimnasio", "glacial", "gobernador", "geografía", "generación"],
+      h: ["hormiga", "hermano", "hombre", "hospital", "historia", "humanidad", "habilidad", "herencia", "hipótesis", "horizonte"],
+      i: ["insecto", "iglesia", "inverso", "imaginación", "instrumento", "industria", "infinito", "informática", "inspiración", "inteligencia"],
+      j: ["jirafa", "jardín", "justicia", "jerarquía", "juvenil", "jabalina", "jornada", "juramento", "jurisprudencia", "juguetería"],
+      k: ["karaoke", "kilo", "kilómetro", "kiosco", "kilogramo", "kárate"],
+      l: ["lengua", "limón", "libro", "literatura", "laberinto", "luminoso", "lealtad", "legislatura", "libertad", "laboratorio"],
+      m: ["montaña", "misterio", "mentira", "matemáticas", "mercado", "melodía", "máquina", "monumento", "microscopio", "motivación"],
+      n: ["neblina", "nervioso", "número", "naturaleza", "navegación", "noticia", "noviembre", "nutrición", "nacimiento", "negociación"],
+      ñ: ["niñez", "ñapa", "ñu", "ñandú"],
+      o: ["oscuro", "oración", "objeto", "océano", "orquesta", "observar", "opinión", "oportunidad", "organización", "origen"],
+      p: ["pelota", "problema", "planeta", "paraguas", "pintura", "pirámide", "profesor", "serpiente", "espectro", "perspectiva", "producción"],
+      q: ["quimera", "quijote", "quemado", "química", "quietud", "quirófano"],
+      r: ["ratón", "respuesta", "relato", "revolución", "radiador", "recuerdo", "riqueza", "responsabilidad", "representación", "restaurante"],
+      s: ["sabiduría", "serpiente", "sombra", "silencio", "sorpresa", "sistema", "simetría", "espectro", "supermercado", "sensación"],
+      t: ["trueno", "tigre", "temor", "teléfono", "tradición", "triángulo", "tropical", "tecnología", "territorio", "transformación"],
+      u: ["universo", "último", "urgente", "utensilio", "ubicación", "unión", "urbanización", "universidad", "utilidad", "usurpación"],
+      v: ["ventana", "volcán", "valiente", "vehículo", "victoria", "violín", "veterinario", "voluntario", "vocación", "vulnerabilidad"],
+      w: ["windsurf", "webinar", "whisky", "wifi"],
+      x: ["xenón", "examen", "extranjero", "experiencia"],
+      y: ["yegua", "yacimiento", "yuxtaposición", "yogurt", "yoduro", "yogui"],
+      z: ["zángano", "zigzag", "zanahoria", "zoológico", "zapatilla", "zarpar", "zumbido", "zoología", "zodiaco", "zapatista"]
+    };
+
+    let difficulty = 'easy';
+    let currentLetters = [];
+    let currentWord = null;
+
+    function setDifficulty(level) {
+      difficulty = level;
+      document.getElementById("easyBtn").classList.toggle("active", level === 'easy');
+      document.getElementById("hardBtn").classList.toggle("active", level === 'hard');
+      currentWord = null;
+      wordDisplay.textContent = "---";
+      feedback.textContent = "";
+    }
+
+    allLetters.forEach(letter => {
+      const btn = document.createElement("button");
+      btn.textContent = letter;
+      btn.onclick = () => toggleLetter(letter, btn);
+      letterContainer.appendChild(btn);
+    });
+
+    function toggleLetter(letter, btn) {
+      if (currentLetters.includes(letter)) {
+        currentLetters = currentLetters.filter(l => l !== letter);
+        btn.classList.remove("active");
+      } else {
+        currentLetters.push(letter);
+        btn.classList.add("active");
+      }
+    }
+
+    function nextWord() {
+      if (currentLetters.length === 0) {
+        feedback.textContent = "Selecciona al menos una letra.";
+        feedback.style.color = "orange";
+        return;
+      }
+      const chosenLetter = currentLetters[Math.floor(Math.random() * currentLetters.length)];
+      const wordList = (difficulty === 'easy' ? easyWords : hardWords)[chosenLetter] || [];
+      if (wordList.length === 0) {
+        feedback.textContent = `No hay palabras para "${chosenLetter}" en este nivel.`;
+        feedback.style.color = "red";
+        return;
+      }
+      currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+      updateDisplay();
+      feedback.textContent = "";
+      userInput.value = "";
+    }
+
+    function nextWordWithSelectedLetters() {
+      if (currentLetters.length === 0) {
+        feedback.textContent = "Selecciona al menos una letra.";
+        feedback.style.color = "orange";
+        return;
+      }
+      const availableWords = [];
+      const wordLists = difficulty === 'easy' ? easyWords : hardWords;
+
+      // Collect words from selected letters
+      currentLetters.forEach(letter => {
+        const wordList = wordLists[letter] || [];
+        availableWords.push(...wordList);
+      });
+
+      // Filter words that contain all selected letters
+      const validWords = availableWords.filter(word => {
+        const lowerWord = word.toLowerCase();
+        return currentLetters.every(letter => lowerWord.includes(letter));
+      });
+
+      if (validWords.length === 0) {
+        feedback.textContent = `No hay palabras que contengan ${currentLetters.join(", ")} en este nivel.`;
+        feedback.style.color = "red";
+        return;
+      }
+
+      currentWord = validWords[Math.floor(Math.random() * validWords.length)];
+      updateDisplay();
+      feedback.textContent = "";
+      userInput.value = "";
+    }
+
+    function updateDisplay() {
+      wordDisplay.textContent = uppercaseToggle.checked && currentWord ? currentWord.toUpperCase() : currentWord;
+    }
+
+    uppercaseToggle.onchange = updateDisplay;
+
+    function checkAnswer() {
+      if (!currentWord) {
+        feedback.textContent = "Por favor, elige una palabra con 'Siguiente' o 'Palabras con letras seleccionadas'.";
+        feedback.style.color = "orange";
+        return;
+      }
+      const typed = userInput.value.trim().toLowerCase();
+      if (typed === currentWord.toLowerCase()) {
+        feedback.textContent = "¡Correcto! 😊";
+        feedback.style.color = "green";
+        soundCorrect.play();
+      } else {
+        feedback.textContent = `Incorrecto. Era "${currentWord}"`;
+        feedback.style.color = "red";
+        soundWrong.play();
+      }
+    }
+
+    function speakWord() {
+      if (!currentWord) return;
+      const utter = new SpeechSynthesisUtterance(currentWord);
+      utter.lang = "es-ES";
+      speechSynthesis.speak(utter);
+    }
+
+    darkModeToggle.onchange = () => {
+      document.body.classList.toggle("dark-mode", darkModeToggle.checked);
+    };
+
+    setDifficulty('easy');
+  </script>
+</body>
+</html>
