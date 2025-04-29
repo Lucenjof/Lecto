@@ -3,159 +3,358 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JULIA LEE</title>
+  <title>Julia Lee</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Comic+Sans+MS&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      padding: 20px;
-      background: #fffbf2;
-      color: #333;
+      padding: 10px;
+      background: linear-gradient(135deg, #1e1e1e, #333);
+      color: #f0f0f0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: background 0.3s, color 0.3s;
       min-height: 100vh;
+      margin: 0;
+      box-sizing: border-box;
+      transition: background 0.3s, color 0.3s;
     }
-    body.dark-mode {
-      background: #222;
-      color: #f0f0f0;
+    body.light-mode {
+      background: linear-gradient(135deg, #fff8e1, #ffebee);
+      color: #333;
+      font-family: 'Comic Sans MS', 'Arial', sans-serif;
     }
     h1 {
-      font-size: 3em;
-      color: #ff6f61;
-    }
-    body.dark-mode h1 {
+      font-size: 1.8em;
       color: #ffb347;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      margin: 0;
+    }
+    body.light-mode h1 {
+      color: #ff6f61;
     }
     h2 {
-      font-size: 1.8em;
-      color: #ff6f61;
-      margin-bottom: 10px;
-    }
-    body.dark-mode h2 {
+      font-size: 1.2em;
       color: #ffb347;
+      margin: 60px 0 8px;
+      text-align: center;
     }
-    .letters, .difficulty, .controls {
+    body.light-mode h2 {
+      color: #ff6f61;
+    }
+    .letters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin: 0 0 10px;
+      padding-top: 10px;
+    }
+    .letters button {
+      padding: 10px;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(68, 68, 68, 0.8);
+      backdrop-filter: blur(8px);
+      color: #f0f0f0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+      min-width: 42px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    body.light-mode .letters button {
+      background: rgba(255, 202, 40, 0.8);
+      color: #333;
+    }
+    .letters button:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+    .letters button.active {
+      background: linear-gradient(135deg, #ff6f61, #d94f43);
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 0 10px rgba(255, 111, 97, 0.7);
+      transform: scale(1.1);
+    }
+    body.light-mode .letters button.active {
+      background: linear-gradient(135deg, #4fc3f7, #0288d1);
+      box-shadow: 0 0 10px rgba(79, 195, 247, 0.7);
+    }
+    .word {
+      font-size: 72px;
+      font-weight: bold;
+      background: rgba(68, 68, 68, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 12px 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      margin: 8px 0;
+      transition: font-family 0.3s, font-size 0.3s;
+      text-align: center;
+      cursor: pointer;
+    }
+    .word.cursive {
+      font-family: 'Dancing Script', cursive;
+      font-size: 78px;
+    }
+    body.light-mode .word {
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .word .highlight {
+      font-weight: bold;
+      color: #ff6f61;
+    }
+    body.light-mode .word .highlight {
+      color: #4fc3f7;
+    }
+    .syllables {
+      font-size: 44px;
+      font-weight: 600;
+      color: #ccc;
+      background: rgba(68, 68, 68, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 8px 12px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      margin: 8px 0;
+      transition: font-family 0.3s;
+      letter-spacing: 3px;
+      text-align: center;
+    }
+    .syllables.cursive {
+      font-family: 'Dancing Script', cursive;
+      font-size: 48px;
+    }
+    body.light-mode .syllables {
+      background: rgba(255, 255, 255, 0.8);
+      color: #555;
+    }
+    .syllables .highlight {
+      font-weight: bold;
+      color: #ff6f61;
+    }
+    body.light-mode .syllables .highlight {
+      color: #4fc3f7;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin: 8px 0;
+    }
+    .navigation-controls {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
-      margin-bottom: 20px;
-    }
-    .letters button, .difficulty button {
-      padding: 12px 16px;
-      font-size: 20px;
-      border: 2px solid transparent;
+      margin: 6px 0;
+      padding: 6px;
+      background: rgba(51, 51, 51, 0.8);
+      backdrop-filter: blur(8px);
       border-radius: 12px;
-      background-color: #fff0c1;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     }
-    body.dark-mode .letters button,
-    body.dark-mode .difficulty button {
-      background-color: #444;
-      color: #f0f0f0;
+    body.light-mode .navigation-controls {
+      background: rgba(255, 248, 225, 0.8);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
     }
-    .letters button:hover, .difficulty button:hover {
-      transform: scale(1.05);
+    .controls.bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(51, 51, 51, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 6px;
+      box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
     }
-    .letters button.active {
-      background-color: #ff6f61;
-      color: white;
-      font-weight: bold;
-      font-size: 22px;
-      border: 2px solid #d94f43;
-      box-shadow: 0 0 8px rgba(255, 111, 97, 0.7);
-      transform: scale(1.1);
-    }
-    body.dark-mode .letters button.active {
-      background-color: #ffb347;
-      border: 2px solid #cc8c2c;
-      box-shadow: 0 0 8px rgba(255, 179, 71, 0.7);
-    }
-    .difficulty button.active {
-      background-color: #ffb347;
-      color: white;
-      font-weight: bold;
-    }
-    .word {
-      font-size: 50px;
-      font-weight: bold;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      margin: 20px 0;
-    }
-    body.dark-mode .word {
-      background: #333;
+    body.light-mode .controls.bottom {
+      background: rgba(255, 248, 225, 0.8);
+      box-shadow: 0 -3px 10px rgba(0,0,0,0.15);
     }
     input[type="text"] {
-      padding: 12px;
-      font-size: 18px;
-      border: 2px solid #ccc;
-      border-radius: 12px;
-    }
-    button {
-      padding: 10px 16px;
-      font-size: 16px;
-      background-color: #ffb347;
-      color: white;
+      padding: 10px;
+      font-size: 14px;
       border: none;
       border-radius: 10px;
+      width: 140px;
+      max-width: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    body.light-mode input[type="text"] {
+      background: rgba(255, 255, 255, 0.9);
+    }
+    button {
+      padding: 12px;
+      font-size: 24px;
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      touch-action: manipulation;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
     }
     button:hover {
-      background-color: #f28c28;
+      transform: scale(1.1);
+      filter: brightness(1.2);
+    }
+    #previousButton {
+      background: linear-gradient(135deg, #ab47bc, #8e24aa);
+    }
+    #nextButton {
+      background: linear-gradient(135deg, #4fc3f7, #0288d1);
+    }
+    #selectedWordsButton {
+      background: linear-gradient(135deg, #4caf50, #388e3c);
+    }
+    #verifyButton {
+      background: linear-gradient(135deg, #ffb347, #ff8f00);
     }
     .feedback {
       font-weight: bold;
-      margin-top: 20px;
-      font-size: 20px;
+      margin: 8px 0;
+      font-size: 16px;
+      text-align: center;
     }
     .dark-toggle {
-      margin-bottom: 20px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .dark-toggle input {
+      display: none;
+    }
+    .dark-toggle label {
+      font-size: 24px;
+      background: rgba(68, 68, 68, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    body.light-mode .dark-toggle label {
+      background: rgba(255, 202, 40, 0.8);
+    }
+    .dark-toggle label:hover {
+      transform: rotate(180deg);
     }
     footer {
       margin-top: auto;
-      padding: 20px;
-      font-size: 16px;
-      color: #ff6f61;
+      padding: 10px;
+      font-size: 12px;
+      color: #ffb347;
       text-align: center;
     }
-    body.dark-mode footer {
-      color: #ffb347;
+    body.light-mode footer {
+      color: #ff6f61;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 8px;
+      }
+      h1 {
+        font-size: 1.4em;
+      }
+      h2 {
+        font-size: 1.1em;
+        margin: 50px 0 6px;
+      }
+      .letters button {
+        padding: 7px;
+        font-size: 13px;
+        min-width: 36px;
+      }
+      .word {
+        font-size: 56px;
+        padding: 10px 14px;
+      }
+      .word.cursive {
+        font-size: 60px;
+      }
+      .syllables {
+        font-size: 34px;
+        padding: 6px 10px;
+      }
+      .syllables.cursive {
+        font-size: 38px;
+      }
+      input[type="text"] {
+        width: 120px;
+        font-size: 13px;
+      }
+      button {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+      }
+      .navigation-controls {
+        padding: 5px;
+        gap: 6px;
+      }
+      .controls.bottom {
+        padding: 5px;
+        gap: 5px;
+      }
+      .feedback {
+        font-size: 14px;
+      }
+      footer {
+        font-size: 11px;
+        padding: 8px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>JULIA LEE 📚🧠🐤</h1>
-
   <div class="dark-toggle">
-    <label><input type="checkbox" id="darkModeToggle" /> 🌙 Modo oscuro</label>
+    <input type="checkbox" id="darkModeToggle" checked />
+    <label for="darkModeToggle" id="darkModeLabel">🌙</label>
   </div>
 
-  <div class="difficulty">
-    <button onclick="setDifficulty('easy')" id="easyBtn">Fácil</button>
-    <button onclick="setDifficulty('hard')" id="hardBtn">Difícil</button>
-  </div>
+  <h1>Julia Lee 📚🧠🐤</h1>
 
   <h2>Selecciona letra/s a practicar</h2>
   <div class="letters" id="letters"></div>
 
   <div class="controls">
-    <label><input type="checkbox" id="uppercaseToggle" /> Mayúsculas</label>
+    <label><input type="checkbox" id="uppercaseToggle" /> 🔠 Mayúsculas</label>
     <label><input type="checkbox" id="italicToggle" /> ✍️ Cursiva</label>
-    <button onclick="speakWord()">🔊 Escuchar</button>
-    <button onclick="nextWord()">➡️ Siguiente</button>
-    <button onclick="nextWordWithSelectedLetters()">📋 Palabras con letras seleccionadas</button>
   </div>
 
-  <div class="word" id="wordDisplay">---</div>
+  <div class="word" id="wordDisplay" onclick="speakWord()">---</div>
+  <div class="syllables" id="syllablesDisplay">---</div>
 
-  <div class="controls">
+  <div class="navigation-controls">
+    <button id="previousButton" onclick="previousWord()">⬅️</button>
+    <button id="nextButton" onclick="nextWord()">➡️</button>
+    <button id="selectedWordsButton" onclick="nextWordWithSelectedLetters()">📋</button>
+  </div>
+
+  <div class="controls bottom">
     <input type="text" id="userInput" placeholder="Escribe la palabra" />
-    <button onclick="checkAnswer()">Verificar</button>
+    <button id="verifyButton" onclick="checkAnswer()">✅</button>
   </div>
 
   <div class="feedback" id="feedback"></div>
@@ -169,86 +368,50 @@
     const allLetters = "abcdefghijklmnñopqrstuvwxyz".split("");
     const letterContainer = document.getElementById("letters");
     const wordDisplay = document.getElementById("wordDisplay");
+    const syllablesDisplay = document.getElementById("syllablesDisplay");
     const userInput = document.getElementById("userInput");
     const feedback = document.getElementById("feedback");
     const uppercaseToggle = document.getElementById("uppercaseToggle");
     const italicToggle = document.getElementById("italicToggle");
     const darkModeToggle = document.getElementById("darkModeToggle");
+    const darkModeLabel = document.getElementById("darkModeLabel");
     const soundCorrect = document.getElementById("soundCorrect");
     const soundWrong = document.getElementById("soundWrong");
 
-    const easyWords = {
-      a: ["ala", "amor", "agua", "abeja", "arbol", "anillo", "avión", "arena", "auto", "azul"],
-      b: ["bola", "burro", "boca", "bebé", "bote", "baila", "barco", "banco", "beso", "buzo"],
-      c: ["casa", "coco", "cielo", "carro", "conejo", "cama", "circo", "cinta", "cuadro", "sopa", "paso"],
-      d: ["dado", "día", "duda", "dulce", "diente", "dama", "deporte", "dedo", "dormir", "dibujo"],
-      e: ["eco", "edad", "ella", "elefante", "estrella", "espejo", "escoba", "escala", "espada", "sopa", "paso"],
-      f: ["foca", "faro", "fresa", "flor", "fiesta", "fruta", "fuego", "falda", "flecha", "fácil"],
-      g: ["gato", "goma", "gota", "globo", "gallo", "gorra", "gusano", "gafas", "guitarra", "gema"],
-      h: ["hola", "hilo", "hora", "huevo", "hoja", "hueso", "helado", "hermano", "hacha", "humo"],
-      i: ["idea", "iglu", "iris", "isla", "imán", "invierno", "iglesia", "iguana", "imagen", "inicio"],
-      j: ["jugo", "jota", "juez", "juego", "jarra", "jardín", "joya", "jirafa", "jabón", "joven"],
-      k: ["koala", "kilo", "karate", "kiwi", "kiosco", "ketchup"],
-      l: ["luz", "lago", "luna", "león", "libro", "lápiz", "limón", "lazo", "leche", "lento"],
-      m: ["mesa", "mano", "miel", "mono", "música", "mariposa", "moto", "mundo", "magia", "marea"],
-      n: ["nube", "nene", "nuez", "nido", "nariz", "navidad", "naranja", "nieto", "noche", "nave"],
-      ñ: ["niña", "año", "ñandú", "niño", "ñapa", "ñu"],
-      o: ["ola", "ojo", "oro", "oso", "oveja", "olivo", "oreja", "ogro", "olmo", "sopa", "paso"],
-      p: ["pato", "palo", "puma", "perro", "pez", "puerta", "pincel", "sopa", "paso", "piso", "plato"],
-      q: ["queso", "quinto", "quiosco", "quema", "quince", "quitar"],
-      r: ["rana", "rueda", "río", "ratón", "rosa", "rey", "reloj", "risa", "roca", "rama"],
-      s: ["sol", "sopa", "sala", "sapo", "silla", "sombrero", "sueño", "paso", "piso", "salto", "siete"],
-      t: ["taza", "toro", "tina", "tigre", "torta", "tren", "tulipán", "tela", "templo", "tinta"],
-      u: ["uva", "uno", "uña", "unicornio", "uniforme", "usar", "urbano", "unir", "ultimo", "sopa"],
-      v: ["vaca", "voto", "velo", "viento", "volar", "vidrio", "viaje", "vivo", "vuelo", "verde"],
-      w: ["wafle", "web", "whisky", "wifi"],
-      x: ["xilófono", "xeno", "xalapa"],
-      y: ["yema", "yoyo", "yate", "yogur", "yeso", "yunque", "yogui"],
-      z: ["zapato", "zorro", "zoo", "zanahoria", "zigzag", "zumo", "zamba", "zona"]
+    const words = {
+      a: ["ala", "amor", "agua", "auto", "arena", "aula", "sopa", "pasa", "mala", "nasa", "lima", "mapa", "pana", "sala", "musa", "manta", "pausa", "selva", "bala", "abeja", "abajo", "banana"],
+      b: ["bola", "boca", "bebé", "bote", "beso", "baila", "barco", "buey", "buzo", "bobo", "bala", "abeja", "abajo", "banana", "barba", "basura", "burbuja", "bocado"],
+      c: ["casa", "coco", "cielo", "copa", "cueva", "cima", "cose", "cace", "sopa", "nasa", "sima", "sano", "ansia", "salina", "cabo", "cabeza", "cobija", "cadera"],
+      d: ["dado", "día", "duda", "dulce", "dedo", "dama", "deporte", "dieta", "duna", "dose", "cada", "codo", "ceda", "cadena", "cuidado", "dedica"],
+      e: ["eco", "edad", "ella", "espejo", "estrella", "eme", "sopa", "pasa", "mena", "pesa", "luna", "pena", "nieve", "paseo", "selva", "muela", "bela", "besa"],
+      f: ["foca", "faro", "fresa", "flor", "fuego", "foso", "fusa", "fiel", "fino", "fama", "afila", "afuera", "firma", "foca", "funda", "fábula"],
+      g: ["gato", "goma", "gota", "globo", "gasa", "gime", "golea", "ganso", "giro", "gala", "agita", "aguja", "gloria", "gordo", "guitarra", "garganta"],
+      h: ["hola", "hilo", "hora", "huevo", "hoja", "hueso", "humo", "haya", "hacha", "hilo", "héroe", "hongo", "habilidad", "hormiga", "héroe", "hueso"],
+      i: ["idea", "isla", "imán", "iglu", "iris", "inca", "iglesia", "ima", "ida", "linea", "piano", "liana", "baila", "bicicleta", "cima", "dica"],
+      j: ["jugo", "juez", "juego", "jarra", "joya", "jefe", "junto", "jalea", "joven", "jardín", "ajo", "aja", "jirafa", "jornada", "jubila", "juntos"],
+      k: ["koala", "kilo", "kiwi", "kiosco", "kefir", "kaki", "kárate", "kilo", "kiosco", "kinder", "ketchup", "kilo", "kiosco", "kilo", "kilo", "kilo"],
+      l: ["luna", "león", "libro", "lápiz", "limón", "lago", "lazo", "leche", "lima", "liso", "mala", "nala", "pala", "sala", "losa", "mola", "luma", "malla", "melón", "lamina", "lumia", "lupa", "pila", "polea", "pleno", "suela", "selva", "lance"],
+      m: ["mesa", "mano", "miel", "mono", "musa", "mima", "mora", "mueca", "museo", "mama", "mina", "mopa", "mala", "mil", "mapa", "miso", "suma", "manta", "mismo", "masa", "mena", "muela", "malla", "melón", "lamina", "nimio", "numen"],
+      n: ["nube", "nene", "nuez", "nido", "nada", "nace", "nave", "nieto", "noche", "nana", "mina", "napa", "nasa", "nala", "nemo", "pena", "pino", "pana", "nansa", "seno", "sana", "nieve", "menu", "nimio", "numen", "nuesa", "panel", "piano"],
+      ñ: ["niña", "niño", "ñapa", "ñu", "ñandú", "ñaca", "ñame", "ñata", "ñato", "ñu", "ñapa", "ñame", "ñu", "ñapa", "ñu", "ñapa", "ñu", "ñapa"],
+      o: ["ola", "ojo", "oro", "oso", "oveja", "aula", "sopa", "copa", "mopa", "losa", "sano", "mono", "pomo", "manto", "piano", "sopesa", "boca", "codo"],
+      p: ["pato", "palo", "peso", "perro", "pez", "papa", "sopa", "paso", "piso", "pasa", "mapa", "napa", "puma", "pala", "pompa", "pena", "pino", "pana", "pesa", "paseo", "pampa", "pila", "polea", "pleno", "pausa", "pista", "panel", "piano", "pluma", "palma"],
+      q: ["queso", "quema", "quinto", "quiosco", "quepa", "quien", "química", "quitar", "quema", "quiosco", "quinto", "quema", "quinto", "quema", "quinto", "quema"],
+      r: ["rana", "río", "rosa", "rey", "rima", "rusa", "risa", "roca", "rama", "rulo", "arriba", "arena", "barrio", "corre", "carro", "rápido"],
+      s: ["sol", "sopa", "sala", "sapo", "sueño", "soso", "paso", "piso", "pasa", "casa", "nasa", "musa", "sala", "losa", "sima", "suma", "sano", "pesa", "suela", "nansa", "sena", "nieve", "nuesa", "sensa", "pausa", "pista", "selva", "salina", "sopesa"],
+      t: ["taza", "toro", "tigre", "tren", "tela", "tina", "toma", "tusa", "taco", "tipo", "atún", "etapa", "batir", "cita", "dieta", "gato"],
+      u: ["uva", "uno", "uña", "unir", "usar", "ud", "sopa", "cueva", "puma", "musa", "luma", "suma", "lupa", "nuesa", "muela", "pluma", "burbuja", "cuidado"],
+      v: ["vaca", "velo", "viento", "viaje", "vivo", "vena", "visa", "vuela", "voto", "vale", "avión", "uva", "vive", "valla", "vapor", "vuelo"],
+      w: ["wafle", "web", "wifi", "wok", "water", "watt", "web", "wifi", "wok", "web", "wifi", "wok", "web", "wifi", "wok", "web", "wifi", "wok"],
+      x: ["xilófono", "xeno", "xalapa", "taxi", "óxido", "extra", "éxito", "máximo", "texto", "laxante", "flexible", "extremo", "máximo", "texto", "laxante", "flexible"],
+      y: ["yema", "yate", "yogur", "yoyo", "yaga", "yogui", "yunta", "yodo", "ayuda", "playa", "yeso", "yegua", "crayón", "rayo", "payaso", "maya"],
+      z: ["zapato", "zorro", "zoo", "zumo", "zapa", "zona", "zalea", "zebra", "azúcar", "lazo", "paz", "raíz", "mazo", "feliz", "brisa", "máximo"]
     };
 
-    const hardWords = {
-      a: ["altura", "asno", "andar", "aventura", "almohada", "aniversario", "artículo", "arquitectura", "atención", "ambiente"],
-      b: ["bravo", "botón", "barriga", "biblioteca", "burbuja", "bufanda", "bandera", "beneficio", "baloncesto", "biodiversidad"],
-      c: ["cuchara", "clase", "correr", "castillo", "cometa", "cocodrilo", "compás", "computadora", "conversación", "serpiente", "espectro"],
-      d: ["dedal", "dulzura", "doblar", "dinosaurio", "descanso", "diploma", "dibujo", "democracia", "desafío", "disciplina"],
-      e: ["estrella", "espuma", "esfera", "escritorio", "elección", "escalera", "estudio", "experiencia", "electricidad", "serpiente", "espectro"],
-      f: ["fragancia", "fuerza", "fútbol", "familia", "fantasía", "fotografía", "frontera", "filosofía", "frecuencia", "formación"],
-      g: ["guitarra", "goloso", "grande", "gabinete", "generoso", "gimnasio", "glacial", "gobernador", "geografía", "generación"],
-      h: ["hormiga", "hermano", "hombre", "hospital", "historia", "humanidad", "habilidad", "herencia", "hipótesis", "horizonte"],
-      i: ["insecto", "iglesia", "inverso", "imaginación", "instrumento", "industria", "infinito", "informática", "inspiración", "inteligencia"],
-      j: ["jirafa", "jardín", "justicia", "jerarquía", "juvenil", "jabalina", "jornada", "juramento", "jurisprudencia", "juguetería"],
-      k: ["karaoke", "kilo", "kilómetro", "kiosco", "kilogramo", "kárate"],
-      l: ["lengua", "limón", "libro", "literatura", "laberinto", "luminoso", "lealtad", "legislatura", "libertad", "laboratorio"],
-      m: ["montaña", "misterio", "mentira", "matemáticas", "mercado", "melodía", "máquina", "monumento", "microscopio", "motivación"],
-      n: ["neblina", "nervioso", "número", "naturaleza", "navegación", "noticia", "noviembre", "nutrición", "nacimiento", "negociación"],
-      ñ: ["niñez", "ñapa", "ñu", "ñandú"],
-      o: ["oscuro", "oración", "objeto", "océano", "orquesta", "observar", "opinión", "oportunidad", "organización", "origen"],
-      p: ["pelota", "problema", "planeta", "paraguas", "pintura", "pirámide", "profesor", "serpiente", "espectro", "perspectiva", "producción"],
-      q: ["quimera", "quijote", "quemado", "química", "quietud", "quirófano"],
-      r: ["ratón", "respuesta", "relato", "revolución", "radiador", "recuerdo", "riqueza", "responsabilidad", "representación", "restaurante"],
-      s: ["sabiduría", "serpiente", "sombra", "silencio", "sorpresa", "sistema", "simetría", "espectro", "supermercado", "sensación"],
-      t: ["trueno", "tigre", "temor", "teléfono", "tradición", "triángulo", "tropical", "tecnología", "territorio", "transformación"],
-      u: ["universo", "último", "urgente", "utensilio", "ubicación", "unión", "urbanización", "universidad", "utilidad", "usurpación"],
-      v: ["ventana", "volcán", "valiente", "vehículo", "victoria", "violín", "veterinario", "voluntario", "vocación", "vulnerabilidad"],
-      w: ["windsurf", "webinar", "whisky", "wifi"],
-      x: ["xenón", "examen", "extranjero", "experiencia"],
-      y: ["yegua", "yacimiento", "yuxtaposición", "yogurt", "yoduro", "yogui"],
-      z: ["zángano", "zigzag", "zanahoria", "zoológico", "zapatilla", "zarpar", "zumbido", "zoología", "zodiaco", "zapatista"]
-    };
-
-    let difficulty = 'easy';
     let currentLetters = [];
     let currentWord = null;
-
-    function setDifficulty(level) {
-      difficulty = level;
-      document.getElementById("easyBtn").classList.toggle("active", level === 'easy');
-      document.getElementById("hardBtn").classList.toggle("active", level === 'hard');
-      currentWord = null;
-      wordDisplay.textContent = "---";
-      feedback.textContent = "";
-    }
+    let wordHistory = [];
+    let historyIndex = -1;
 
     allLetters.forEach(letter => {
       const btn = document.createElement("button");
@@ -267,6 +430,78 @@
       }
     }
 
+    function syllabify(word) {
+      if (!word) return { syllables: ["---"], text: "---" };
+      const vowels = /[aeiouáéíóú]/i;
+      const strongVowels = /[aáeéoó]/i;
+      const weakVowels = /[iíuú]/i;
+      let syllables = [];
+      let currentSyllable = "";
+      let i = 0;
+
+      while (i < word.length) {
+        currentSyllable += word[i];
+
+        if (vowels.test(word[i])) {
+          if (i + 1 < word.length && vowels.test(word[i + 1])) {
+            if ((weakVowels.test(word[i]) && strongVowels.test(word[i + 1])) ||
+                (strongVowels.test(word[i]) && weakVowels.test(word[i + 1])) ||
+                (weakVowels.test(word[i]) && weakVowels.test(word[i + 1]))) {
+              currentSyllable += word[i + 1];
+              i += 2;
+            } else {
+              syllables.push(currentSyllable);
+              currentSyllable = "";
+              i++;
+            }
+          } else {
+            syllables.push(currentSyllable);
+            currentSyllable = "";
+            i++;
+            if (i < word.length && /[bcdfghjklmnñpqrstvwxyz]/i.test(word[i])) {
+              currentSyllable += word[i];
+              i++;
+              if (i < word.length && /[lnr]/i.test(word[i - 1]) && /[bcdfghjklmnñpqrstvwxyz]/i.test(word[i])) {
+                currentSyllable += word[i];
+                i++;
+              }
+            }
+          }
+        } else {
+          i++;
+        }
+      }
+
+      if (currentSyllable) syllables.push(currentSyllable);
+
+      return {
+        syllables: syllables.filter(s => s),
+        text: syllables.filter(s => s).join("-") || word
+      };
+    }
+
+    function highlightLetters(text, letters) {
+      let result = text;
+      letters.forEach(letter => {
+        const regex = new RegExp(`(${letter})`, 'gi');
+        result = result.replace(regex, '<b class="highlight">$1</b>');
+      });
+      return result;
+    }
+
+    function previousWord() {
+      if (historyIndex <= 0) {
+        feedback.textContent = "No hay palabras anteriores.";
+        feedback.style.color = "orange";
+        return;
+      }
+      historyIndex--;
+      currentWord = wordHistory[historyIndex];
+      updateDisplay();
+      feedback.textContent = "";
+      userInput.value = "";
+    }
+
     function nextWord() {
       if (currentLetters.length === 0) {
         feedback.textContent = "Selecciona al menos una letra.";
@@ -274,15 +509,26 @@
         return;
       }
       const chosenLetter = currentLetters[Math.floor(Math.random() * currentLetters.length)];
-      const wordList = (difficulty === 'easy' ? easyWords : hardWords)[chosenLetter] || [];
+      const wordList = words[chosenLetter] || [];
       if (wordList.length === 0) {
-        feedback.textContent = `No hay palabras para "${chosenLetter}" en este nivel.`;
+        feedback.textContent = `No hay palabras para "${chosenLetter}".`;
         feedback.style.color = "red";
         return;
       }
-      currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+      const prioritizedWords = wordList.filter(word => {
+        const { syllables } = syllabify(word);
+        return syllables[0]?.toLowerCase().includes(chosenLetter);
+      });
+      const finalList = prioritizedWords.length > 0 ? prioritizedWords : wordList;
+      currentWord = finalList[Math.floor(Math.random() * finalList.length)];
+      if (historyIndex < wordHistory.length - 1) {
+        wordHistory = wordHistory.slice(0, historyIndex + 1);
+      }
+      wordHistory.push(currentWord);
+      historyIndex++;
       updateDisplay();
-      feedback.textContent = "";
+      feedback.textContent = `Palabra con ${chosenLetter}: ${currentWord}`;
+      feedback.style.color = "white";
       userInput.value = "";
     }
 
@@ -292,36 +538,54 @@
         feedback.style.color = "orange";
         return;
       }
-      const availableWords = [];
-      const wordLists = difficulty === 'easy' ? easyWords : hardWords;
+      const allWords = Object.values(words).flat();
+      const vowels = ['a', 'e', 'i', 'o', 'u'];
 
-      // Collect words from selected letters
-      currentLetters.forEach(letter => {
-        const wordList = wordLists[letter] || [];
-        availableWords.push(...wordList);
-      });
-
-      // Filter words that contain all selected letters
-      const validWords = availableWords.filter(word => {
+      const validWords = allWords.filter(word => {
         const lowerWord = word.toLowerCase();
-        return currentLetters.every(letter => lowerWord.includes(letter));
+        const hasAllSelected = currentLetters.every(letter => lowerWord.includes(letter));
+        const consonants = lowerWord.split('').filter(char => !vowels.includes(char));
+        const onlyAllowedConsonants = consonants.every(consonant => currentLetters.includes(consonant));
+        return hasAllSelected && onlyAllowedConsonants;
       });
 
-      if (validWords.length === 0) {
-        feedback.textContent = `No hay palabras que contengan ${currentLetters.join(", ")} en este nivel.`;
+      const prioritizedWords = validWords.filter(word => {
+        const { syllables } = syllabify(word);
+        return currentLetters.some(letter => syllables[0]?.toLowerCase().includes(letter) || syllables[1]?.toLowerCase().includes(letter));
+      });
+
+      const finalList = prioritizedWords.length > 0 ? prioritizedWords : validWords;
+
+      if (finalList.length === 0) {
+        feedback.textContent = `No hay palabras que contengan solo ${currentLetters.join(", ")} y vocales.`;
         feedback.style.color = "red";
         return;
       }
 
-      currentWord = validWords[Math.floor(Math.random() * validWords.length)];
+      currentWord = finalList[Math.floor(Math.random() * finalList.length)];
+      if (historyIndex < wordHistory.length - 1) {
+        wordHistory = wordHistory.slice(0, historyIndex + 1);
+      }
+      wordHistory.push(currentWord);
+      historyIndex++;
       updateDisplay();
-      feedback.textContent = "";
+      feedback.textContent = `Palabra con ${currentLetters.join(", ")}: ${currentWord}`;
+      feedback.style.color = "white";
       userInput.value = "";
     }
 
     function updateDisplay() {
-      wordDisplay.textContent = uppercaseToggle.checked && currentWord ? currentWord.toUpperCase() : currentWord;
-      wordDisplay.style.fontStyle = italicToggle.checked ? 'italic' : 'normal';
+      const displayWord = currentWord ? (uppercaseToggle.checked ? currentWord.toUpperCase() : currentWord) : "---";
+      const { text: syllableText } = currentWord ? syllabify(displayWord) : { text: "---" };
+      wordDisplay.innerHTML = currentWord ? highlightLetters(displayWord, currentLetters) : "---";
+      syllablesDisplay.innerHTML = currentWord ? highlightLetters(syllableText, currentLetters) : "---";
+      if (italicToggle.checked) {
+        wordDisplay.classList.add('cursive');
+        syllablesDisplay.classList.add('cursive');
+      } else {
+        wordDisplay.classList.remove('cursive');
+        syllablesDisplay.classList.remove('cursive');
+      }
     }
 
     uppercaseToggle.onchange = updateDisplay;
@@ -329,7 +593,7 @@
 
     function checkAnswer() {
       if (!currentWord) {
-        feedback.textContent = "Por favor, elige una palabra con 'Siguiente' o 'Palabras con letras seleccionadas'.";
+        feedback.textContent = "Por favor, elige una palabra con 'Siguiente' o 'Palabras seleccionadas'.";
         feedback.style.color = "orange";
         return;
       }
@@ -353,10 +617,9 @@
     }
 
     darkModeToggle.onchange = () => {
-      document.body.classList.toggle("dark-mode", darkModeToggle.checked);
+      document.body.classList.toggle("light-mode", darkModeToggle.checked);
+      darkModeLabel.textContent = darkModeToggle.checked ? '☀️' : '🌙';
     };
-
-    setDifficulty('easy');
   </script>
 </body>
 </html>
