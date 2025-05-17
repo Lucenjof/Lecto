@@ -1,658 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Julia Lee</title>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Comic+Sans+MS&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      padding: 10px;
-      background: linear-gradient(135deg, #1e1e1e, #333);
-      color: #f0f0f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      box-sizing: border-box;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.light-mode {
-      background: linear-gradient(135deg, #fff8e1, #ffebee);
-      color: #333;
-      font-family: 'Comic Sans MS', 'Arial', sans-serif;
-    }
-    h1 {
-      font-size: 1.8em;
-      color: #ffb347;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      margin: 0;
-      z-index: 5;
-    }
-    body.light-mode h1 {
-      color: #ff6f61;
-    }
-    h2 {
-      font-size: 1.2em;
-      color: #ffb347;
-      margin: 55px 0 6px;
-      text-align: center;
-      z-index: 10;
-    }
-    body.light-mode h2 {
-      color: #ff6f61;
-    }
-    .letters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-      margin: 0 0 10px;
-      padding: 10px 0;
-      min-height: 60px;
-      z-index: 10;
-    }
-    .letters button {
-      padding: 10px;
-      font-size: 15px;
-      border: none;
-      border-radius: 10px;
-      background: rgba(68, 68, 68, 0.8);
-      backdrop-filter: blur(8px);
-      color: #f0f0f0;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      touch-action: manipulation;
-      min-width: 42px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      opacity: 1;
-      visibility: visible;
-    }
-    body.light-mode .letters button {
-      background: rgba(255, 202, 40, 0.8);
-      color: #333;
-    }
-    .letters button:hover {
-      transform: scale(1.05);
-      filter: brightness(1.2);
-    }
-    .letters button.active {
-      background: linear-gradient(135deg, #ff6f61, #d94f43);
-      color: white;
-      font-weight: bold;
-      font-size: 16px;
-      box-shadow: 0 0 10px rgba(255, 111, 97, 0.7);
-      transform: scale(1.1);
-    }
-    body.light-mode .letters button.active {
-      background: linear-gradient(135deg, #4fc3f7, #0288d1);
-      box-shadow: 0 0 10px rgba(79, 195, 247, 0.7);
-    }
-    .word {
-      font-size: 72px;
-      font-weight: bold;
-      background: rgba(68, 68, 68, 0.8);
-      backdrop-filter: blur(8px);
-      padding: 10px 16px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      margin: 6px 0;
-      transition: font-family 0.3s, font-size 0.3s;
-      text-align: center;
-      cursor: pointer;
-      word-break: break-word;
-      overflow-wrap: break-word;
-    }
-    .word.cursive {
-      font-family: 'Dancing Script', cursive;
-      font-size: 78px;
-    }
-    body.light-mode .word {
-      background: rgba(255, 255, 255, 0.8);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    .word .highlight {
-      color: #ff6f61;
-    }
-    body.light-mode .word .highlight {
-      color: #4fc3f7;
-    }
-    .syllables {
-      font-size: 44px;
-      font-weight: 600;
-      color: #ccc;
-      background: rgba(68, 68, 68, 0.8);
-      backdrop-filter: blur(8px);
-      padding: 6px 10px;
-      border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      margin: 6px 0;
-      transition: font-family 0.3s;
-      letter-spacing: 2px;
-      text-align: center;
-      word-break: break-word;
-      overflow-wrap: break-word;
-    }
-    .syllables.cursive {
-      font-family: 'Dancing Script', cursive;
-      font-size: 48px;
-    }
-    body.light-mode .syllables {
-      background: rgba(255, 255, 255, 0.8);
-      color: #555;
-    }
-    .syllables .highlight {
-      color: #ff6f61;
-    }
-    body.light-mode .syllables .highlight {
-      color: #4fc3f7;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-      margin: 8px 0;
-    }
-    .navigation-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin: 4px 0;
-      padding: 5px;
-      background: rgba(51, 51, 51, 0.8);
-      backdrop-filter: blur(8px);
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    }
-    body.light-mode .navigation-controls {
-      background: rgba(255, 248, 225, 0.8);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-    }
-    .controls.bottom {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(51, 51, 51, 0.8);
-      backdrop-filter: blur(8px);
-      padding: 6px;
-      box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-    }
-    body.light-mode .controls.bottom {
-      background: rgba(255, 248, 225, 0.8);
-      box-shadow: 0 -3px 10px rgba(0,0,0,0.15);
-    }
-    input[type="text"] {
-      padding: 10px;
-      font-size: 14px;
-      border: none;
-      border-radius: 10px;
-      width: 140px;
-      max-width: 100%;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(8px);
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-    }
-    body.light-mode input[type="text"] {
-      background: rgba(255, 255, 255, 0.9);
-    }
-    button {
-      padding: 12px;
-      font-size: 24px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      touch-action: manipulation;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    button:hover {
-      transform: scale(1.1);
-      filter: brightness(1.2);
-    }
-    #previousButton {
-      background: linear-gradient(135deg, #ab47bc, #8e24aa);
-    }
-    #nextButton {
-      background: linear-gradient(135deg, #4fc3f7, #0288d1);
-    }
-    #selectedWordsButton {
-      background: linear-gradient(135deg, #4caf50, #388e3c);
-    }
-    #verifyButton {
-      background: linear-gradient(135deg, #ffb347, #ff8f00);
-    }
-    .feedback {
-      font-weight: bold;
-      margin: 8px 0;
-      font-size: 16px;
-      text-align: center;
-    }
-    .dark-toggle {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 5;
-    }
-    .dark-toggle input {
-      display: none;
-    }
-    .dark-toggle label {
-      font-size: 24px;
-      background: rgba(68, 68, 68, 0.8);
-      backdrop-filter: blur(8px);
-      padding: 8px;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
-      display: inline-block;
-    }
-    body.light-mode .dark-toggle label {
-      background: rgba(255, 202, 40, 0.8);
-    }
-    .dark-toggle label:hover {
-      transform: rotate(180deg);
-    }
-    footer {
-      margin-top: auto;
-      padding: 10px;
-      font-size: 12px;
-      color: #ffb347;
-      text-align: center;
-    }
-    body.light-mode footer {
-      color: #ff6f61;
-    }
-    @media (max-width: 600px) {
-      body {
-        padding: 8px;
-      }
-      h1 {
-        font-size: 1.4em;
-      }
-      h2 {
-        font-size: 1.1em;
-        margin: 45px 0 5px;
-      }
-      .letters {
-        gap: 5px;
-        padding: 8px 0;
-        min-height: 50px;
-      }
-      .letters button {
-        padding: 8px;
-        font-size: 13px;
-        min-width: 38px;
-      }
-      .word {
-        font-size: 56px;
-        padding: 8px 12px;
-      }
-      .word.cursive {
-        font-size: 60px;
-      }
-      .syllables {
-        font-size: 34px;
-        padding: 5px 8px;
-      }
-      .syllables.cursive {
-        font-size: 38px;
-      }
-      input[type="text"] {
-        width: 120px;
-        font-size: 13px;
-      }
-      button {
-        width: 44px;
-        height: 44px;
-        font-size: 22px;
-      }
-      .navigation-controls {
-        padding: 4px;
-        gap: 6px;
-      }
-      .controls.bottom {
-        padding: 5px;
-        gap: 5px;
-      }
-      .feedback {
-        font-size: 14px;
-      }
-      footer {
-        font-size: 11px;
-        padding: 8px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leo Palabras - Aprendamos a Leer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <div class="dark-toggle">
-    <input type="checkbox" id="darkModeToggle" checked />
-    <label for="darkModeToggle" id="darkModeLabel">🌙</label>
-  </div>
+    <header>
+        <h1><i class="fas fa-book-reader"></i>Leo Palabras</h1>
+    </header>
 
-  <h1>Julia Lee 📚🧠🐤</h1>
+    <main id="app-container">
+        <section id="pantalla-seleccion-nivel" class="pantalla activa">
+            <h2>Elige un Nivel o Lee Cuentos</h2>
+            <div id="botones-niveles-container" class="niveles-grid">
+                </div>
+            <button id="btn-ir-a-cuentos" class="btn-accion btn-grande"><i class="fas fa-book-open"></i> Leer Cuentos</button>
+            <button id="btn-ver-progreso" class="btn-secundario">Ver Progreso</button>
+        </section>
 
-  <h2>Selecciona letra/s a practicar</h2>
-  <div class="letters" id="letters"></div>
+        <section id="pantalla-actividad" class="pantalla">
+            <button id="btn-volver-seleccion-desde-actividad" class="btn-secundario btn-volver"><i class="fas fa-arrow-left"></i> Volver a Niveles</button>
+            <h2 id="titulo-nivel-actividad"></h2>
+            <div id="contenido-actividad">
+                <p id="instruccion-actividad"></p>
+                <div id="elemento-aprender" class="elemento-grande">
+                    </div>
+                <button id="btn-escuchar-elemento" class="btn-accion"><i class="fas fa-volume-up"></i> Escuchar</button>
+                <div id="opciones-respuesta" class="opciones-grid">
+                    </div>
+            </div>
+            <div id="navegacion-actividad">
+                <button id="btn-anterior" class="btn-nav"><i class="fas fa-chevron-left"></i> Anterior</button>
+                <button id="btn-siguiente" class="btn-nav">Siguiente <i class="fas fa-chevron-right"></i></button>
+            </div>
+            <p id="feedback-usuario"></p>
+            <p id="contador-elementos"></p>
+        </section>
 
-  <div class="controls">
-    <label><input type="checkbox" id="uppercaseToggle" /> 🔠 Mayúsculas</label>
-    <label><input type="checkbox" id="italicToggle" /> ✍️ Cursiva</label>
-  </div>
+        <section id="pantalla-lista-cuentos" class="pantalla">
+            <button id="btn-volver-seleccion-desde-lista-cuentos" class="btn-secundario btn-volver"><i class="fas fa-arrow-left"></i> Volver al Inicio</button>
+            <h2><i class="fas fa-book-open"></i> Biblioteca de Cuentos</h2>
+            <div id="cuentos-grid-container" class="cuentos-grid">
+                </div>
+        </section>
 
-  <div class="word" id="wordDisplay" onclick="speakWord()">---</div>
-  <div class="syllables" id="syllablesDisplay">---</div>
+        <section id="pantalla-leer-cuento" class="pantalla">
+            <button id="btn-volver-a-lista-cuentos" class="btn-secundario btn-volver"><i class="fas fa-arrow-left"></i> Volver a Cuentos</button>
+            <h2 id="titulo-cuento"></h2>
+            <div id="texto-cuento-container" class="texto-cuento">
+                </div>
+            <button id="btn-escuchar-cuento" class="btn-accion"><i class="fas fa-volume-up"></i> Escuchar Cuento</button>
+        </section>
 
-  <div class="navigation-controls">
-    <button id="previousButton" onclick="previousWord()">⬅️</button>
-    <button id="nextButton" onclick="nextWord()">➡️</button>
-    <button id="selectedWordsButton" onclick="nextWordWithSelectedLetters()">📋</button>
-  </div>
+        <section id="pantalla-progreso" class="pantalla">
+            <button id="btn-cerrar-progreso" class="btn-secundario btn-volver"><i class="fas fa-times"></i> Cerrar</button>
+            <h2>Tu Progreso</h2>
+            <div id="info-progreso">
+                </div>
+            <button id="btn-resetear-progreso" class="btn-peligro">Resetear Progreso</button>
+        </section>
+    </main>
 
-  <div class="controls bottom">
-    <input type="text" id="userInput" placeholder="Escribe la palabra" />
-    <button id="verifyButton" onclick="checkAnswer()">✅</button>
-  </div>
+    <footer>
+        <p>&copy; <span id="currentYear"></span> Leo Palabras. Aprendamos a Leer.</p>
+    </footer>
 
-  <div class="feedback" id="feedback"></div>
-
-  <footer>LRC MAS IA</footer>
-
-  <audio id="soundCorrect" src="https://cdn.pixabay.com/audio/2022/03/15/audio_fce3e63e04.mp3"></audio>
-  <audio id="soundWrong" src="https://cdn.pixabay.com/audio/2022/03/15/audio_9e28057438.mp3"></audio>
-
-  <script>
-    const allLetters = "abcdefghijklmnñopqrstuvwxyz".split("");
-    const letterContainer = document.getElementById("letters");
-    const wordDisplay = document.getElementById("wordDisplay");
-    const syllablesDisplay = document.getElementById("syllablesDisplay");
-    const userInput = document.getElementById("userInput");
-    const feedback = document.getElementById("feedback");
-    const uppercaseToggle = document.getElementById("uppercaseToggle");
-    const italicToggle = document.getElementById("italicToggle");
-    const darkModeToggle = document.getElementById("darkModeToggle");
-    const darkModeLabel = document.getElementById("darkModeLabel");
-    const soundCorrect = document.getElementById("soundCorrect");
-    const soundWrong = document.getElementById("soundWrong");
-
-    const words = {
-      a: ["ala", "amor", "agua", "auto", "arena", "aula", "sopa", "pasa", "mala", "nasa", "lima", "mapa", "pana", "sala", "musa", "manta", "pausa", "selva", "bala", "abeja", "abajo", "banana"],
-      b: ["bola", "boca", "bebé", "bote", "beso", "baila", "barco", "buey", "buzo", "bobo", "bala", "abeja", "abajo", "banana", "barba", "basura", "burbuja", "bocado"],
-      c: ["casa", "coco", "cielo", "copa", "cueva", "cima", "cose", "cace", "sopa", "nasa", "sima", "sano", "ansia", "salina", "cabo", "cabeza", "cobija", "cadera"],
-      d: ["dado", "día", "duda", "dulce", "dedo", "dama", "deporte", "dieta", "duna", "dose", "cada", "codo", "ceda", "cadena", "cuidado", "dedica"],
-      e: ["eco", "edad", "ella", "espejo", "estrella", "eme", "sopa", "pasa", "mena", "pesa", "luna", "pena", "nieve", "paseo", "selva", "muela", "bela", "besa"],
-      f: ["foca", "faro", "fresa", "flor", "fuego", "foso", "fusa", "fiel", "fino", "fama", "afila", "afuera", "firma", "foca", "funda", "fábula"],
-      g: ["gato", "goma", "gota", "globo", "gasa", "gime", "golea", "ganso", "giro", "gala", "agita", "aguja", "gloria", "gordo", "guitarra", "garganta"],
-      h: ["hola", "hilo", "hora", "huevo", "hoja", "hueso", "humo", "haya", "hacha", "hilo", "héroe", "hongo", "habilidad", "hormiga", "héroe", "hueso"],
-      i: ["idea", "isla", "imán", "iglu", "iris", "inca", "iglesia", "ima", "ida", "linea", "piano", "liana", "baila", "bicicleta", "cima", "dica"],
-      j: ["jugo", "juez", "juego", "jarra", "joya", "jefe", "junto", "jalea", "joven", "jardín", "ajo", "aja", "jirafa", "jornada", "jubila", "juntos"],
-      k: ["koala", "kilo", "kiwi", "kiosco", "kefir", "kaki", "kárate", "kilo", "kiosco", "kinder", "ketchup", "kilo", "kiosco", "kilo", "kilo", "kilo"],
-      l: ["luna", "león", "libro", "lápiz", "limón", "lago", "lazo", "leche", "lima", "liso", "mala", "nala", "pala", "sala", "losa", "mola", "luma", "malla", "melón", "lamina", "lumia", "lupa", "pila", "polea", "pleno", "suela", "selva", "lance"],
-      m: ["mesa", "mano", "miel", "mono", "musa", "mima", "mora", "mueca", "museo", "mama", "mina", "mopa", "mala", "mil", "mapa", "miso", "suma", "manta", "mismo", "masa", "mena", "muela", "malla", "melón", "lamina", "nimio", "numen"],
-      n: ["nube", "nene", "nuez", "nido", "nada", "nace", "nave", "nieto", "noche", "nana", "mina", "napa", "nasa", "nala", "nemo", "pena", "pino", "pana", "nansa", "seno", "sana", "nieve", "menu", "nimio", "numen", "nuesa", "panel", "piano"],
-      ñ: ["niña", "niño", "ñapa", "ñu", "ñandú", "ñaca", "ñame", "ñata", "ñato", "ñu", "ñapa", "ñame", "ñu", "ñapa", "ñu", "ñapa", "ñu", "ñapa"],
-      o: ["ola", "ojo", "oro", "oso", "oveja", "aula", "sopa", "copa", "mopa", "losa", "sano", "mono", "pomo", "manto", "piano", "sopesa", "boca", "codo"],
-      p: ["pato", "palo", "peso", "perro", "pez", "papa", "sopa", "paso", "piso", "pasa", "mapa", "napa", "puma", "pala", "pompa", "pena", "pino", "pana", "pesa", "paseo", "pampa", "pila", "polea", "pleno", "pausa", "pista", "panel", "piano", "pluma", "palma"],
-      q: ["queso", "quema", "quinto", "quiosco", "quepa", "quien", "química", "quitar", "quema", "quiosco", "quinto", "quema", "quinto", "quema", "quinto", "quema"],
-      r: ["rana", "río", "rosa", "rey", "rima", "rusa", "risa", "roca", "rama", "rulo", "arriba", "arena", "barrio", "corre", "carro", "rápido"],
-      s: ["sol", "sopa", "sala", "sapo", "sueño", "soso", "paso", "piso", "pasa", "casa", "nasa", "musa", "sala", "losa", "sima", "suma", "sano", "pesa", "suela", "nansa", "sena", "nieve", "nuesa", "sensa", "pausa", "pista", "selva", "salina", "sopesa"],
-      t: ["taza", "toro", "tigre", "tren", "tela", "tina", "toma", "tusa", "taco", "tipo", "atún", "etapa", "batir", "cita", "dieta", "gato"],
-      u: ["uva", "uno", "uña", "unir", "usar", "ud", "sopa", "cueva", "puma", "musa", "luma", "suma", "lupa", "nuesa", "muela", "pluma", "burbuja", "cuidado"],
-      v: ["vaca", "velo", "viento", "viaje", "vivo", "vena", "visa", "vuela", "voto", "vale", "avión", "uva", "vive", "valla", "vapor", "vuelo"],
-      w: ["wafle", "web", "wifi", "wok", "water", "watt", "web", "wifi", "wok", "web", "wifi", "wok", "web", "wifi", "wok", "web", "wifi", "wok"],
-      x: ["xilófono", "xeno", "xalapa", "taxi", "óxido", "extra", "éxito", "máximo", "texto", "laxante", "flexible", "extremo", "máximo", "texto", "laxante", "flexible"],
-      y: ["yema", "yate", "yogur", "yoyo", "yaga", "yogui", "yunta", "yodo", "ayuda", "playa", "yeso", "yegua", "crayón", "rayo", "payaso", "maya"],
-      z: ["zapato", "zorro", "zoo", "zumo", "zapa", "zona", "zalea", "zebra", "azúcar", "lazo", "paz", "raíz", "mazo", "feliz", "brisa", "máximo"]
-    };
-
-    let currentLetters = [];
-    let currentWord = null;
-    let wordHistory = [];
-    let historyIndex = -1;
-
-    if (!letterContainer) {
-      console.error("Contenedor #letters no encontrado");
-    } else {
-      allLetters.forEach(letter => {
-        console.log("Creando botón para:", letter);
-        const btn = document.createElement("button");
-        btn.textContent = letter;
-        btn.onclick = () => toggleLetter(letter, btn);
-        letterContainer.appendChild(btn);
-      });
-    }
-
-    function toggleLetter(letter, btn) {
-      if (currentLetters.includes(letter)) {
-        currentLetters = currentLetters.filter(l => l !== letter);
-        btn.classList.remove("active");
-      } else {
-        currentLetters.push(letter);
-        btn.classList.add("active");
-      }
-    }
-
-    function syllabify(word) {
-      if (!word) return { syllables: ["---"], text: "---" };
-      const vowels = /[aeiouáéíóú]/i;
-      const strongVowels = /[aáeéoó]/i;
-      const weakVowels = /[iíuú]/i;
-      const consonants = /[bcdfghjklmnñpqrstvwxyz]/i;
-      const diphthongs = /(ai|ei|oi|au|eu|iu|ui|ay|ey|oy|uy)/i;
-      let syllables = [];
-      let currentSyllable = "";
-      let i = 0;
-
-      while (i < word.length) {
-        currentSyllable += word[i];
-
-        if (vowels.test(word[i])) {
-          let nextChar = word[i + 1] || '';
-          let nextNextChar = word[i + 2] || '';
-
-          if (nextChar && diphthongs.test(word.slice(i, i + 2))) {
-            currentSyllable += nextChar;
-            i += 2;
-          } else if (nextChar && vowels.test(nextChar) && 
-                    ((strongVowels.test(word[i]) && strongVowels.test(nextChar)) ||
-                     (weakVowels.test(word[i]) && weakVowels.test(nextChar)))) {
-            syllables.push(currentSyllable);
-            currentSyllable = "";
-            i++;
-          } else {
-            syllables.push(currentSyllable);
-            currentSyllable = "";
-            i++;
-            if (i < word.length && consonants.test(word[i])) {
-              currentSyllable += word[i];
-              i++;
-              if (i < word.length && 
-                  ((word[i - 1] === 'r' && word[i] === 'r') ||
-                   (word[i - 1] === 'l' && word[i] === 'l') ||
-                   /[bcdfghjklmnpqrstvwxyz]/.test(word[i]))) {
-                currentSyllable += word[i];
-                i++;
-              }
-            }
-          }
-        } else {
-          i++;
-          if (i < word.length && word[i - 1] === 'h' && vowels.test(word[i])) {
-            currentSyllable = word[i - 1] + currentSyllable;
-          }
-        }
-      }
-
-      if (currentSyllable) syllables.push(currentSyllable);
-
-      return {
-        syllables: syllables.filter(s => s),
-        text: syllables.filter(s => s).join("-") || word
-      };
-    }
-
-    function highlightLetters(text, letters) {
-      let result = text;
-      letters.forEach(letter => {
-        const regex = new RegExp(`(${letter})`, 'gi');
-        result = result.replace(regex, '<span class="highlight">$1</span>');
-      });
-      return result;
-    }
-
-    function previousWord() {
-      if (historyIndex <= 0) {
-        feedback.textContent = "No hay palabras anteriores.";
-        feedback.style.color = "orange";
-        return;
-      }
-      historyIndex--;
-      currentWord = wordHistory[historyIndex];
-      updateDisplay();
-      feedback.textContent = "";
-      userInput.value = "";
-    }
-
-    function nextWord() {
-      if (currentLetters.length === 0) {
-        feedback.textContent = "Selecciona al menos una letra.";
-        feedback.style.color = "orange";
-        return;
-      }
-      const chosenLetter = currentLetters[Math.floor(Math.random() * currentLetters.length)];
-      const wordList = words[chosenLetter] || [];
-      if (wordList.length === 0) {
-        feedback.textContent = `No hay palabras para "${chosenLetter}".`;
-        feedback.style.color = "red";
-        return;
-      }
-      const prioritizedWords = wordList.filter(word => {
-        const { syllables } = syllabify(word);
-        return syllables[0]?.toLowerCase().includes(chosenLetter);
-      });
-      const finalList = prioritizedWords.length > 0 ? prioritizedWords : wordList;
-      currentWord = finalList[Math.floor(Math.random() * finalList.length)];
-      if (historyIndex < wordHistory.length - 1) {
-        wordHistory = wordHistory.slice(0, historyIndex + 1);
-      }
-      wordHistory.push(currentWord);
-      historyIndex++;
-      updateDisplay();
-      feedback.textContent = `Palabra con ${chosenLetter}: ${currentWord}`;
-      feedback.style.color = "white";
-      userInput.value = "";
-    }
-
-    function nextWordWithSelectedLetters() {
-      if (currentLetters.length === 0) {
-        feedback.textContent = "Selecciona al menos una letra.";
-        feedback.style.color = "orange";
-        return;
-      }
-      const allWords = Object.values(words).flat();
-      const vowels = ['a', 'e', 'i', 'o', 'u'];
-
-      const validWords = allWords.filter(word => {
-        const lowerWord = word.toLowerCase();
-        const hasAllSelected = currentLetters.every(letter => lowerWord.includes(letter));
-        const consonants = lowerWord.split('').filter(char => !vowels.includes(char));
-        const onlyAllowedConsonants = consonants.every(consonant => currentLetters.includes(consonant));
-        return hasAllSelected && onlyAllowedConsonants;
-      });
-
-      const prioritizedWords = validWords.filter(word => {
-        const { syllables } = syllabify(word);
-        return currentLetters.some(letter => syllables[0]?.toLowerCase().includes(letter) || syllables[1]?.toLowerCase().includes(letter));
-      });
-
-      const finalList = prioritizedWords.length > 0 ? prioritizedWords : validWords;
-
-      if (finalList.length === 0) {
-        feedback.textContent = `No hay palabras que contengan solo ${currentLetters.join(", ")} y vocales.`;
-        feedback.style.color = "red";
-        return;
-      }
-
-      currentWord = finalList[Math.floor(Math.random() * finalList.length)];
-      if (historyIndex < wordHistory.length - 1) {
-        wordHistory = wordHistory.slice(0, historyIndex + 1);
-      }
-      wordHistory.push(currentWord);
-      historyIndex++;
-      updateDisplay();
-      feedback.textContent = `Palabra con ${currentLetters.join(", ")}: ${currentWord}`;
-      feedback.style.color = "white";
-      userInput.value = "";
-    }
-
-    function updateDisplay() {
-      const displayWord = currentWord ? (uppercaseToggle.checked ? currentWord.toUpperCase() : currentWord) : "---";
-      const { text: syllableText } = currentWord ? syllabify(displayWord) : { text: "---" };
-      const fontSize = currentWord && currentWord.length > 6 ? '90%' : '100%';
-      wordDisplay.style.fontSize = `calc(72px * ${fontSize})`;
-      wordDisplay.innerHTML = currentWord ? highlightLetters(displayWord, currentLetters) : "---";
-      syllablesDisplay.style.fontSize = `calc(44px * ${fontSize})`;
-      syllablesDisplay.innerHTML = currentWord ? highlightLetters(syllableText, currentLetters) : "---";
-      if (italicToggle.checked) {
-        wordDisplay.classList.add('cursive');
-        syllablesDisplay.classList.add('cursive');
-        wordDisplay.style.fontSize = `calc(78px * ${fontSize})`;
-        syllablesDisplay.style.fontSize = `calc(48px * ${fontSize})`;
-      } else {
-        wordDisplay.classList.remove('cursive');
-        syllablesDisplay.classList.remove('cursive');
-      }
-    }
-
-    uppercaseToggle.onchange = updateDisplay;
-    italicToggle.onchange = updateDisplay;
-
-    function checkAnswer() {
-      if (!currentWord) {
-        feedback.textContent = "Por favor, elige una palabra con 'Siguiente' o 'Palabras seleccionadas'.";
-        feedback.style.color = "orange";
-        return;
-      }
-      const typed = userInput.value.trim().toLowerCase();
-      if (typed === currentWord.toLowerCase()) {
-        feedback.textContent = "¡Correcto! 😊";
-        feedback.style.color = "green";
-        soundCorrect.play();
-      } else {
-        feedback.textContent = `Incorrecto. Era "${currentWord}"`;
-        feedback.style.color = "red";
-        soundWrong.play();
-      }
-    }
-
-    function speakWord() {
-      if (!currentWord) return;
-      const utter = new SpeechSynthesisUtterance(currentWord);
-      utter.lang = "es-ES";
-      speechSynthesis.speak(utter);
-    }
-
-    darkModeToggle.onchange = () => {
-      document.body.classList.toggle("light-mode", darkModeToggle.checked);
-      darkModeLabel.textContent = darkModeToggle.checked ? '☀️' : '🌙';
-    };
-  </script>
+    <script src="js/script.js"></script>
 </body>
 </html>
