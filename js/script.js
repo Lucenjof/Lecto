@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Elementos del DOM
     const pantallaSeleccionNivel = document.getElementById('pantalla-seleccion-nivel');
     const pantallaActividad = document.getElementById('pantalla-actividad');
     const pantallaProgreso = document.getElementById('pantalla-progreso');
@@ -8,19 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const botonesNivelesContainer = document.getElementById('botones-niveles-container');
     const btnIrACuentos = document.getElementById('btn-ir-a-cuentos');
-    
+
     const btnVolverSeleccionDesdeActividad = document.getElementById('btn-volver-seleccion-desde-actividad');
     const tituloNivelActividad = document.getElementById('titulo-nivel-actividad');
     const instruccionActividad = document.getElementById('instruccion-actividad');
     const elementoAprender = document.getElementById('elemento-aprender');
     const btnEscucharElemento = document.getElementById('btn-escuchar-elemento');
-    const opcionesRespuestaContainer = document.getElementById('opciones-respuesta');
+    const btnCursiva = document.getElementById('btn-cursiva'); // Botón Cursiva
     const btnAnterior = document.getElementById('btn-anterior');
     const btnSiguiente = document.getElementById('btn-siguiente');
     const feedbackUsuario = document.getElementById('feedback-usuario');
     const contadorElementos = document.getElementById('contador-elementos');
 
-    // Elementos de Cuentos
+    const imgPersonajeFeedback = document.getElementById('img-personaje-feedback');
+
     const btnVolverSeleccionDesdeListaCuentos = document.getElementById('btn-volver-seleccion-desde-lista-cuentos');
     const cuentosGridContainer = document.getElementById('cuentos-grid-container');
     const btnVolverAListaCuentos = document.getElementById('btn-volver-a-lista-cuentos');
@@ -28,39 +28,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const textoCuentoContainer = document.getElementById('texto-cuento-container');
     const btnEscucharCuento = document.getElementById('btn-escuchar-cuento');
 
-    // Elementos de Progreso
     const btnVerProgreso = document.getElementById('btn-ver-progreso');
     const btnCerrarProgreso = document.getElementById('btn-cerrar-progreso');
     const infoProgresoEl = document.getElementById('info-progreso');
     const btnResetearProgreso = document.getElementById('btn-resetear-progreso');
-    
+
     document.getElementById('currentYear').textContent = new Date().getFullYear();
 
     const synth = window.speechSynthesis;
     let vocesEspanol = [];
+    let elementoCursivaActiva = false; // Estado inicial: no cursiva
+
+    const IMAGEN_BUHO_FELIZ = 'img/leo_búho_feliz.png';
+    const IMAGEN_BUHO_PENSATIVO = 'img/leo_búho_pensativo.png';
+    const IMAGEN_BUHO_NORMAL = 'img/leo_búho_asomado.png';
 
     function cargarVoces() {
         vocesEspanol = synth.getVoices().filter(voice => voice.lang.startsWith('es'));
+        console.log("--- Voces del Sintetizador Disponibles ---");
+        synth.getVoices().forEach(voice => {
+            console.log(`Nombre: "${voice.name}", Idioma: ${voice.lang}, Default: ${voice.default}`);
+        });
+        console.log("------------------------------------------");
         if (vocesEspanol.length > 0) {
-             console.log("Voces en español disponibles:", vocesEspanol);
+             console.log("Voces en español detectadas:", vocesEspanol.map(v => ({name: v.name, lang: v.lang})));
         } else if (synth.getVoices().length > 0) {
-            console.warn("No se encontraron voces en español, se usará la predeterminada si existe.");
+            console.warn("No se encontraron voces específicas en español.");
+        } else {
+            console.warn("Aún no se han cargado las voces del sintetizador.");
         }
     }
-    cargarVoces();
     if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = cargarVoces;
     }
+    cargarVoces();
 
     function hablar(texto, callback) {
         if (synth.speaking) {
-            synth.cancel(); 
+            synth.cancel();
         }
         if (texto) {
             const utterThis = new SpeechSynthesisUtterance(texto);
             utterThis.onerror = (event) => console.error('Error en SpeechSynthesis:', event);
             if (vocesEspanol.length > 0) {
-                utterThis.voice = vocesEspanol.find(v => v.lang === 'es-ES' || v.lang === 'es-MX' || v.lang === 'es-AR') || vocesEspanol[0];
+                const nombreVozDeseada = "Google español"; // EJEMPLO
+                let vozSeleccionada = vocesEspanol.find(voice => voice.name === nombreVozDeseada);
+                if (vozSeleccionada) {
+                    utterThis.voice = vozSeleccionada;
+                } else {
+                    utterThis.voice = vocesEspanol.find(v => v.lang === 'es-AR' || v.lang === 'es-ES' || v.lang === 'es-MX' || v.lang === 'es-US') || vocesEspanol[0];
+                }
+                console.log("Usando voz:", utterThis.voice ? utterThis.voice.name : "Voz predeterminada");
+            } else {
+                console.warn("No hay voces en español configuradas. Usando voz predeterminada del navegador.");
             }
             utterThis.pitch = 1;
             utterThis.rate = 0.85;
@@ -69,29 +89,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             synth.speak(utterThis);
         } else if (callback) {
-            callback(); // Llama al callback incluso si no hay texto, para flujos consistentes
+            callback();
         }
     }
 
-    // Datos de la aplicación
     const datosApp = {
         niveles: [
             {
                 id: 1,
                 nombre: "Vocales y M, P, S, L",
-                tipoContenido: "letras_silabas_palabras",
                 letras: ['a', 'e', 'i', 'o', 'u', 'm', 'p', 's', 'l'],
-                silabasBase: { 
-                    'm': ['ma', 'me', 'mi', 'mo', 'mu'],
-                    'p': ['pa', 'pe', 'pi', 'po', 'pu'],
-                    's': ['sa', 'se', 'si', 'so', 'su'],
-                    'l': ['la', 'le', 'li', 'lo', 'lu'],
+                silabasBase: {
+                    'm': ['ma', 'me', 'mi', 'mo', 'mu'], 'p': ['pa', 'pe', 'pi', 'po', 'pu'],
+                    's': ['sa', 'se', 'si', 'so', 'su'], 'l': ['la', 'le', 'li', 'lo', 'lu'],
                 },
                 palabras: [
                     'ala', 'ola', 'oso', 'usa', 'uña', 'sol', 'sal', 'ser', 'seis', 'mes', 'mil',
-                    'mamá', 'papá', 'mami', 'pipa', 'mapa', 'mesa', 'misa', 'mula', 'mimo', 
+                    'mamá', 'papá', 'mami', 'pipa', 'mapa', 'mesa', 'misa', 'mula', 'mimo',
                     'puma', 'piso', 'pala', 'pupa', 'pomo', 'polo', 'pila', 'pelo',
-                    'sapo', 'sopa', 'susi', 'suma', 'sola', 'sala', 'sello', 'silo', 
+                    'sapo', 'sopa', 'susi', 'suma', 'sola', 'sala', 'sello', 'silo',
                     'lupa', 'loma', 'lima', 'lila', 'lata', 'loro', 'luna', 'lana', 'leal', 'losa',
                     'museo', 'paseo', 'amasa', 'asoma', 'emúes', 'pulpo', 'paloma', 'pomelo', 'pásame'
                 ]
@@ -99,13 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
             {
                 id: 2,
                 nombre: "Letras T, N, D, F",
-                tipoContenido: "letras_silabas_palabras",
                 letras: ['t', 'n', 'd', 'f'],
                 silabasBase: {
-                    't': ['ta', 'te', 'ti', 'to', 'tu'],
-                    'n': ['na', 'ne', 'ni', 'no', 'nu'],
-                    'd': ['da', 'de', 'di', 'do', 'du'],
-                    'f': ['fa', 'fe', 'fi', 'fo', 'fu'],
+                    't': ['ta', 'te', 'ti', 'to', 'tu'], 'n': ['na', 'ne', 'ni', 'no', 'nu'],
+                    'd': ['da', 'de', 'di', 'do', 'du'], 'f': ['fa', 'fe', 'fi', 'fo', 'fu'],
                 },
                 palabras: [
                     'tapa', 'tela', 'tito', 'toma', 'tuna', 'tren', 'pato', 'lata', 'meta', 'moto', 'siete', 'pasta',
@@ -118,18 +131,14 @@ document.addEventListener('DOMContentLoaded', () => {
             {
                 id: 3,
                 nombre: "R (suave/fuerte), C (ca,co,cu), Q (que,qui), B, V, G (ga,go,gu,gue,gui), H",
-                tipoContenido: "letras_silabas_palabras",
                 letras: ['r', 'rr', 'c', 'qu', 'b', 'v', 'g', 'h'],
                 silabasBase: {
-                    'r_suave': ['ara', 'era', 'ira', 'ora', 'ura', 'ar', 'er', 'ir', 'or', 'ur'], // r suave y finales
-                    'rr_fuerte': ['rra', 'rre', 'rri', 'rro', 'rru', 'ra', 're', 'ri', 'ro', 'ru'], // r fuerte inicio y rr
-                    'c_fuerte': ['ca', 'co', 'cu'],
-                    'qu': ['que', 'qui'],
-                    'b': ['ba', 'be', 'bi', 'bo', 'bu'],
-                    'v': ['va', 've', 'vi', 'vo', 'vu'],
-                    'g_fuerte': ['ga', 'go', 'gu'],
-                    'g_suave': ['gue', 'gui'],
-                    'h': ['ha', 'he', 'hi', 'ho', 'hu'] // muda
+                    'r_suave': ['ara', 'era', 'ira', 'ora', 'ura', 'ar', 'er', 'ir', 'or', 'ur'],
+                    'rr_fuerte': ['rra', 'rre', 'rri', 'rro', 'rru', 'ra', 're', 'ri', 'ro', 'ru'],
+                    'c_fuerte': ['ca', 'co', 'cu'], 'qu': ['que', 'qui'],
+                    'b': ['ba', 'be', 'bi', 'bo', 'bu'], 'v': ['va', 've', 'vi', 'vo', 'vu'],
+                    'g_fuerte': ['ga', 'go', 'gu'], 'g_suave': ['gue', 'gui'],
+                    'h': ['ha', 'he', 'hi', 'ho', 'hu']
                 },
                 palabras: [
                     'pera', 'aro', 'mira', 'loro', 'mar', 'torre', 'carro', 'perro', 'barro', 'burro', 'arroz', 'rata', 'río', 'rosa',
@@ -145,25 +154,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         ],
         cuentos: [
-            { 
-                id: 1, titulo: "El Sol Amigo", nivelRecomendado: 1, 
-                texto: "El sol sale. El sol es mi amigo. Mamá ama el sol. Papá ama el sol. El sol da luz. El sol da calor. ¡Viva el sol!" 
+            {
+                id: 1, titulo: "El Sol Amigo", nivelRecomendado: 1,
+                texto: "El sol sale.\nEl sol es mi amigo.\nMamá ama el sol.\nPapá ama el sol.\nEl sol da luz.\nEl sol da calor.\n¡Viva el sol!"
             },
-            { 
-                id: 2, titulo: "Mi Pato Tito", nivelRecomendado: 2, 
-                texto: "Este es mi pato. Mi pato se llama Tito. Tito es amarillo. Tito nada en el lago. Tito dice: ¡cuac, cuac! Yo quiero a Tito." 
+            {
+                id: 2, titulo: "Mi Pato Tito", nivelRecomendado: 2,
+                texto: "Este es mi pato.\nMi pato se llama Tito.\nTito es amarillo.\nTito nada en el lago.\nTito dice: ¡cuac, cuac!\nYo quiero a Tito."
             },
-            { 
-                id: 3, titulo: "La Foca Felisa", nivelRecomendado: 2, 
-                texto: "Felisa es una foca. Felisa vive en el mar. A Felisa le gusta jugar con la pelota. La pelota es roja. Felisa aplaude con sus aletas. ¡Bravo, Felisa!" 
+            {
+                id: 3, titulo: "La Foca Felisa", nivelRecomendado: 2,
+                texto: "Felisa es una foca.\nFelisa vive en el mar.\nA Felisa le gusta jugar con la pelota.\nLa pelota es roja.\nFelisa aplaude con sus aletas.\n¡Bravo, Felisa!"
             },
             {
                 id: 4, titulo: "El Gato Gastón", nivelRecomendado: 3,
-                texto: "Gastón es un gato grande y gordo. A Gastón le gusta dormir en el sofá. También le gusta comer pescado. Cuando Gastón quiere jugar, persigue una bola de lana. Hugo juega con Gastón. ¡Son buenos amigos!"
+                texto: "Gastón es un gato grande y gordo.\nA Gastón le gusta dormir en el sofá.\nTambién le gusta comer pescado.\nCuando Gastón quiere jugar, persigue una bola de lana.\nHugo juega con Gastón.\n¡Son buenos amigos!"
             },
             {
                 id: 5, titulo: "Aventura en el Bosque", nivelRecomendado: 3,
-                texto: "Un día, Vera y Bruno fueron al bosque. Vieron un conejo con orejas largas. El conejo comía hierba. También escucharon el canto de un pájaro en un árbol alto. El bosque es un lugar mágico y lleno de vida."
+                texto: "Un día, Vera y Bruno fueron al bosque.\nVieron un conejo con orejas largas.\nEl conejo comía hierba.\nTambién escucharon el canto de un pájaro en un árbol alto.\nEl bosque es un lugar mágico y lleno de vida."
             }
         ]
     };
@@ -171,11 +180,34 @@ document.addEventListener('DOMContentLoaded', () => {
     let nivelActualId = null;
     let indiceElementoActual = 0;
     let elementosDelNivel = [];
-    let progreso = { nivelesCompletados: [] }; 
+    let progreso = { nivelesCompletados: [] };
+
+    function actualizarPersonajeFeedback(estado) {
+        if (!imgPersonajeFeedback) return;
+        imgPersonajeFeedback.classList.remove('feliz', 'pensativo');
+        switch(estado) {
+            case 'feliz':
+                imgPersonajeFeedback.src = IMAGEN_BUHO_FELIZ;
+                imgPersonajeFeedback.alt = "Leo el Búho Feliz";
+                imgPersonajeFeedback.classList.add('feliz');
+                break;
+            case 'pensativo':
+                imgPersonajeFeedback.src = IMAGEN_BUHO_PENSATIVO;
+                imgPersonajeFeedback.alt = "Leo el Búho Pensativo";
+                imgPersonajeFeedback.classList.add('pensativo');
+                break;
+            default:
+                imgPersonajeFeedback.src = IMAGEN_BUHO_NORMAL;
+                imgPersonajeFeedback.alt = "Leo el Búho";
+        }
+    }
 
     function mostrarPantalla(idPantalla) {
         [pantallaSeleccionNivel, pantallaActividad, pantallaProgreso, pantallaListaCuentos, pantallaLeerCuento].forEach(p => p.classList.remove('activa'));
         document.getElementById(idPantalla).classList.add('activa');
+        if (idPantalla !== 'pantalla-actividad') {
+            actualizarPersonajeFeedback('normal');
+        }
     }
 
     function cargarBotonesNiveles() {
@@ -183,17 +215,14 @@ document.addEventListener('DOMContentLoaded', () => {
         datosApp.niveles.forEach(nivel => {
             const btnNivel = document.createElement('button');
             btnNivel.className = 'btn-nivel';
-            
+            btnNivel.dataset.nivelId = nivel.id;
             let nombreNivelDisplay = `Nivel ${nivel.id}`;
-            if (nivel.nombre.length < 25) { // Evitar nombres demasiado largos en el botón
+            if (nivel.nombre.length < 25) {
                 nombreNivelDisplay += `: ${nivel.nombre}`;
             } else {
                  nombreNivelDisplay += `: ${nivel.nombre.substring(0,22)}...`;
             }
             btnNivel.innerHTML = nombreNivelDisplay;
-
-            btnNivel.dataset.nivelId = nivel.id;
-
             const esDesbloqueado = nivel.id === 1 || progreso.nivelesCompletados.includes(nivel.id - 1);
             if (!esDesbloqueado) {
                 btnNivel.classList.add('bloqueado');
@@ -202,11 +231,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                  btnNivel.innerHTML += ' <i class="fas fa-play-circle"></i>';
             }
-            
             if (progreso.nivelesCompletados.includes(nivel.id)) {
-                 btnNivel.innerHTML += ' <i class="fas fa-check-circle" style="color:lightgreen; margin-left:5px;"></i>';
+                 btnNivel.innerHTML += ' <i class="fas fa-check-circle"></i>';
             }
-
             btnNivel.addEventListener('click', () => iniciarNivel(nivel.id));
             botonesNivelesContainer.appendChild(btnNivel);
         });
@@ -215,17 +242,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function iniciarNivel(idNivel) {
         const nivel = datosApp.niveles.find(n => n.id === idNivel);
         if (!nivel) return;
-
         const esDesbloqueado = nivel.id === 1 || progreso.nivelesCompletados.includes(nivel.id - 1);
         if (!esDesbloqueado) {
             alert("Debes completar el nivel anterior primero.");
             return;
         }
-
         nivelActualId = idNivel;
         tituloNivelActividad.textContent = `Nivel ${nivel.id}: ${nivel.nombre}`;
         elementosDelNivel = [];
-
         if (nivel.letras) elementosDelNivel.push(...nivel.letras.map(l => ({tipo: 'letra', valor: l}) ));
         if (nivel.silabasBase) {
             for (const cons in nivel.silabasBase) {
@@ -233,19 +257,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         if (nivel.palabras) elementosDelNivel.push(...nivel.palabras.map(p => ({tipo: 'palabra', valor: p}) ));
-        
         elementosDelNivel.sort(() => Math.random() - 0.5);
-
         indiceElementoActual = 0;
+        elementoCursivaActiva = false; // Resetear estado de cursiva al iniciar nivel
         mostrarElementoActual();
         mostrarPantalla('pantalla-actividad');
+        actualizarPersonajeFeedback('normal');
     }
 
     function mostrarElementoActual() {
         if (elementosDelNivel.length === 0 || indiceElementoActual >= elementosDelNivel.length) {
-            feedbackUsuario.textContent = "¡Felicidades! Has completado todos los elementos de este nivel.";
+            feedbackUsuario.textContent = "¡Felicidades! Nivel completado.";
             feedbackUsuario.className = 'acierto';
             hablar(feedbackUsuario.textContent);
+            actualizarPersonajeFeedback('feliz');
             if (!progreso.nivelesCompletados.includes(nivelActualId)) {
                 progreso.nivelesCompletados.push(nivelActualId);
                 guardarProgreso();
@@ -257,19 +282,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnSiguiente.textContent = "Siguiente";
                 btnSiguiente.onclick = manejarSiguiente;
             };
-            btnAnterior.disabled = true; // Deshabilitar anterior al final
+            btnAnterior.disabled = true;
             return;
         }
-
         const elemento = elementosDelNivel[indiceElementoActual];
         elementoAprender.textContent = elemento.valor;
-        // instruccionActividad.textContent = `Aprende esta ${elemento.tipo}:`; // Podría ser muy repetitivo
-        instruccionActividad.textContent = "Mira y escucha:";
-        opcionesRespuestaContainer.innerHTML = ''; 
+        instruccionActividad.textContent = "Escucha y repite:";
         feedbackUsuario.textContent = '';
+        feedbackUsuario.className = '';
         btnEscucharElemento.disabled = false;
 
-        /*hablar(elemento.valor); */
+        elementoAprender.classList.toggle('cursiva', elementoCursivaActiva);
+        btnCursiva.innerHTML = elementoCursivaActiva ? '<i class="fas fa-font"></i> Normal' : '<i class="fas fa-italic"></i> Cursiva';
+
+        // Comentado para no leer automáticamente:
+        // hablar(elemento.valor);
+        actualizarPersonajeFeedback('normal');
 
         contadorElementos.textContent = `${indiceElementoActual + 1} / ${elementosDelNivel.length}`;
         btnAnterior.disabled = indiceElementoActual === 0;
@@ -294,19 +322,20 @@ document.addEventListener('DOMContentLoaded', () => {
             indiceElementoActual++;
             mostrarElementoActual();
         } else if (indiceElementoActual >= elementosDelNivel.length -1) {
-             feedbackUsuario.textContent = "¡Felicidades! Has llegado al final de este nivel.";
+             feedbackUsuario.textContent = "¡Muy bien! Has terminado este nivel.";
              feedbackUsuario.className = 'acierto';
              hablar(feedbackUsuario.textContent);
+             actualizarPersonajeFeedback('feliz');
              if (!progreso.nivelesCompletados.includes(nivelActualId)) {
                  progreso.nivelesCompletados.push(nivelActualId);
                  guardarProgreso();
-                 cargarBotonesNiveles(); 
+                 cargarBotonesNiveles();
              }
              btnSiguiente.textContent = "Volver a Niveles";
              btnSiguiente.onclick = () => {
                  mostrarPantalla('pantalla-seleccion-nivel');
-                 btnSiguiente.textContent = "Siguiente"; 
-                 btnSiguiente.onclick = manejarSiguiente; 
+                 btnSiguiente.textContent = "Siguiente";
+                 btnSiguiente.onclick = manejarSiguiente;
              };
         }
     }
@@ -327,6 +356,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (texto) hablar(texto);
     });
 
+    btnCursiva.addEventListener('click', () => {
+        elementoCursivaActiva = !elementoCursivaActiva;
+        elementoAprender.classList.toggle('cursiva', elementoCursivaActiva);
+        btnCursiva.innerHTML = elementoCursivaActiva ? '<i class="fas fa-font"></i> Normal' : '<i class="fas fa-italic"></i> Cursiva';
+    });
+
     btnSiguiente.addEventListener('click', manejarSiguiente);
     btnAnterior.addEventListener('click', manejarAnterior);
     btnVolverSeleccionDesdeActividad.addEventListener('click', () => {
@@ -334,7 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarPantalla('pantalla-seleccion-nivel');
     });
 
-    // --- LÓGICA DE CUENTOS ---
     function cargarListaCuentos() {
         cuentosGridContainer.innerHTML = '';
         datosApp.cuentos.forEach(cuento => {
@@ -344,10 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="cuento-titulo">${cuento.titulo}</span>
                 <span class="cuento-nivel-recomendado">Nivel recomendado: ${cuento.nivelRecomendado}+</span>
             `;
-            // Desbloquear cuentos según progreso (opcional, por ahora todos visibles)
-            // const desbloqueado = progreso.nivelesCompletados.includes(cuento.nivelRecomendado -1) || cuento.nivelRecomendado === 1;
-            // if (!desbloqueado) { btnCuento.disabled = true; btnCuento.style.opacity = "0.5"; }
-
             btnCuento.addEventListener('click', () => mostrarCuento(cuento.id));
             cuentosGridContainer.appendChild(btnCuento);
         });
@@ -357,19 +387,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function mostrarCuento(idCuento) {
         const cuento = datosApp.cuentos.find(c => c.id === idCuento);
         if (!cuento) return;
-
         tituloCuentoEl.textContent = cuento.titulo;
-        textoCuentoContainer.innerHTML = ''; // Limpiar
-        // Dividir el texto en párrafos si hay saltos de línea, o tratarlo como un solo bloque
+        textoCuentoContainer.innerHTML = '';
         const parrafos = cuento.texto.split('\n').filter(p => p.trim() !== '');
         parrafos.forEach(pText => {
             const pElem = document.createElement('p');
             pElem.textContent = pText;
             textoCuentoContainer.appendChild(pElem);
         });
-        
         mostrarPantalla('pantalla-leer-cuento');
-        // Hablar el título al mostrar el cuento
         hablar(`Cuento: ${cuento.titulo}.`);
     }
 
@@ -377,12 +403,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnVolverSeleccionDesdeListaCuentos.addEventListener('click', () => mostrarPantalla('pantalla-seleccion-nivel'));
     btnVolverAListaCuentos.addEventListener('click', cargarListaCuentos);
     btnEscucharCuento.addEventListener('click', () => {
-        const cuento = datosApp.cuentos.find(c => c.titulo === tituloCuentoEl.textContent);
-        if (cuento) hablar(cuento.texto);
+        const textoCompleto = Array.from(textoCuentoContainer.querySelectorAll('p')).map(p => p.textContent).join(' ');
+        if (textoCompleto) hablar(textoCompleto);
     });
 
-
-    // --- PROGRESO ---
     function guardarProgreso() {
         localStorage.setItem('progresoLeoLeoPalabras', JSON.stringify(progreso));
     }
@@ -397,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function mostrarDatosProgreso() {
-        infoProgresoEl.innerHTML = ''; 
+        infoProgresoEl.innerHTML = '';
         if (progreso.nivelesCompletados.length === 0) {
             infoProgresoEl.innerHTML = "<p>Aún no has completado ningún nivel.</p>";
         } else {
@@ -416,13 +440,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm("¿Estás seguro de que quieres borrar todo tu progreso? Esta acción no se puede deshacer.")) {
             progreso = { nivelesCompletados: [] };
             guardarProgreso();
-            mostrarDatosProgreso(); 
-            cargarBotonesNiveles(); 
+            mostrarDatosProgreso();
+            cargarBotonesNiveles();
             alert("Progreso reseteado.");
         }
     });
 
-    // --- INICIALIZACIÓN DE LA APP ---
     cargarProgreso();
     cargarBotonesNiveles();
     mostrarPantalla('pantalla-seleccion-nivel');

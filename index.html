@@ -3,18 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leo Palabras - Aprendamos a Leer</title>
+    <title>LeoLeo Palabras - Aprende a Leer</title>
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1><i class="fas fa-book-reader"></i>Leo Palabras</h1>
+        <h1><i class="fas fa-book-reader"></i> LeoLeo Palabras</h1>
     </header>
 
     <main id="app-container">
         <section id="pantalla-seleccion-nivel" class="pantalla activa">
-            <h2>Elige un Nivel o Lee Cuentos</h2>
+            <div class="cabecera-pantalla">
+                <h2>Elige un Nivel o Lee Cuentos</h2>
+                <div class="personaje-container" id="personaje-seleccion-nivel">
+                    <img src="img/leo_búho_saludando.png" alt="Leo el Búho Saludando" class="personaje-img">
+                </div>
+            </div>
             <div id="botones-niveles-container" class="niveles-grid">
                 </div>
             <button id="btn-ir-a-cuentos" class="btn-accion btn-grande"><i class="fas fa-book-open"></i> Leer Cuentos</button>
@@ -23,17 +30,26 @@
 
         <section id="pantalla-actividad" class="pantalla">
             <button id="btn-volver-seleccion-desde-actividad" class="btn-secundario btn-volver"><i class="fas fa-arrow-left"></i> Volver a Niveles</button>
-            <h2 id="titulo-nivel-actividad"></h2>
+            <div class="cabecera-pantalla">
+                <h2 id="titulo-nivel-actividad"></h2>
+                <div class="personaje-container" id="personaje-actividad">
+                    <img src="img/leo_búho_asomado.png" alt="Leo el Búho Asomado" class="personaje-img personaje-pequeno">
+                </div>
+            </div>
             <div id="contenido-actividad">
                 <p id="instruccion-actividad"></p>
                 <div id="elemento-aprender" class="elemento-grande">
                     </div>
                 <button id="btn-escuchar-elemento" class="btn-accion"><i class="fas fa-volume-up"></i> Escuchar</button>
+                <button id="btn-cursiva" class="btn-secundario"><i class="fas fa-italic"></i> Cursiva</button>
                 <div id="opciones-respuesta" class="opciones-grid">
                     </div>
             </div>
             <div id="navegacion-actividad">
                 <button id="btn-anterior" class="btn-nav"><i class="fas fa-chevron-left"></i> Anterior</button>
+                <div id="personaje-feedback-container" class="personaje-feedback">
+                    <img src="img/leo_búho_pensativo.png" alt="Feedback de Leo" id="img-personaje-feedback" class="personaje-feedback-img">
+                </div>
                 <button id="btn-siguiente" class="btn-nav">Siguiente <i class="fas fa-chevron-right"></i></button>
             </div>
             <p id="feedback-usuario"></p>
@@ -42,7 +58,12 @@
 
         <section id="pantalla-lista-cuentos" class="pantalla">
             <button id="btn-volver-seleccion-desde-lista-cuentos" class="btn-secundario btn-volver"><i class="fas fa-arrow-left"></i> Volver al Inicio</button>
-            <h2><i class="fas fa-book-open"></i> Biblioteca de Cuentos</h2>
+            <div class="cabecera-pantalla">
+                 <h2><i class="fas fa-book-open"></i> Biblioteca de Cuentos</h2>
+                <div class="personaje-container" id="personaje-lista-cuentos">
+                    <img src="img/leo_búho_leyendo.png" alt="Leo el Búho Leyendo" class="personaje-img">
+                </div>
+            </div>
             <div id="cuentos-grid-container" class="cuentos-grid">
                 </div>
         </section>
@@ -65,7 +86,7 @@
     </main>
 
     <footer>
-        <p>&copy; <span id="currentYear"></span> Leo Palabras. Aprendamos a Leer.</p>
+        <p>&copy; <span id="currentYear"></span> LeoLeo Palabras. Aprender es divertido.</p>
     </footer>
 
     <script src="js/script.js"></script>

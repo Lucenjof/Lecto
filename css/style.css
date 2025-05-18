@@ -37,62 +37,146 @@ main#app-container {
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    position: relative; /* Para posicionar personajes si es necesario globalmente */
 }
 
 .pantalla {
-    display: none; 
+    display: none;
     background-color: #3b4c5c; /* Gris Pizarra un poco más claro */
     padding: 30px;
-    border-radius: 18px; 
+    border-radius: 18px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.3); /* Sombra más pronunciada para profundidad */
     width: 100%;
-    max-width: 750px; 
+    max-width: 750px;
     margin-top: 25px;
     border: 1px solid #4a5a6a; /* Borde sutil para definir el contenedor */
+    position: relative; /* Clave para posicionar personajes dentro de la pantalla */
 }
 
 .pantalla.activa {
-    display: block; 
+    display: block;
+}
+
+.cabecera-pantalla { /* Contenedor para título y personaje si están juntos */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
 }
 
 h2 {
     color: #82aaff; /* Azul Cielo Claro y Brillante */
     margin-top: 0;
-    margin-bottom: 25px;
+    margin-bottom: 10px; /* Reducido si el personaje está cerca */
     font-size: 1.9em; /* Ligeramente más grande para destacar */
     font-weight: 600;
+    z-index: 1; /* Asegura que el título esté sobre el personaje si se superponen */
 }
 h2 i {
     margin-right: 8px;
 }
 
+/* Estilos de Personajes */
+.personaje-container {
+    margin-top: -10px; /* Ajustar según el tamaño y posición deseada */
+    margin-bottom: 15px;
+}
+
+.personaje-img {
+    max-width: 120px; /* Ajustar según el tamaño del personaje */
+    height: auto;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3)); /* Sombra suave */
+    animation: personajeEntra 0.5s ease-out;
+}
+
+.personaje-pequeno {
+    max-width: 80px; /* Más pequeño para esquinas o roles secundarios */
+    position: absolute;
+    top: 15px; /* Ajustar para esquina superior */
+    right: 15px; /* Ajustar para esquina superior */
+    z-index: 5; /* Para que esté por encima de otros elementos si es necesario */
+}
+
+/* Animación sutil de entrada para los personajes */
+@keyframes personajeEntra {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Posicionamiento específico para el personaje en selección de nivel */
+#personaje-seleccion-nivel .personaje-img {
+    max-width: 150px; /* Un poco más grande para la bienvenida */
+    margin-bottom: -10px; /* Solapar ligeramente con el título si se desea */
+}
+
+/* Posicionamiento específico para el personaje en lista de cuentos */
+#personaje-lista-cuentos .personaje-img {
+    max-width: 140px;
+}
+
+/* Contenedor para el personaje de feedback en la pantalla de actividad */
+.personaje-feedback {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px; /* Ancho fijo para el contenedor del feedback */
+    height: 80px; /* Alto fijo */
+    margin: 0 10px; /* Espacio alrededor */
+}
+.personaje-feedback-img {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Transición para cambios de imagen */
+}
+.personaje-feedback-img.feliz {
+    transform: scale(1.1) rotate(5deg);
+}
+.personaje-feedback-img.pensativo {
+    transform: scale(0.9) rotate(-3deg);
+    opacity: 0.8;
+}
+
 
 /* Botones con Estilo Oscuro y Acentos Vibrantes */
-.btn-secundario, .btn-accion, .btn-nav, .btn-nivel, .btn-peligro, .btn-cuento {
+.btn-secundario, .btn-accion, .btn-nav, .btn-nivel, .btn-peligro, .btn-cuento, #btn-cursiva {
     border: none;
     padding: 14px 22px;
-    border-radius: 12px; 
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 1.05em; 
-    font-weight: 600; 
+    font-size: 1.05em;
+    font-weight: 600;
     transition: all 0.25s ease-in-out;
     margin: 8px;
     box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-    letter-spacing: 0.5px; 
+    letter-spacing: 0.5px;
     color: #ffffff; /* Texto blanco por defecto para botones coloridos */
 }
-.btn-secundario:hover, .btn-accion:hover, .btn-nav:hover, .btn-nivel:hover, .btn-peligro:hover, .btn-cuento:hover {
+.btn-secundario:hover, .btn-accion:hover, .btn-nav:hover, .btn-nivel:hover, .btn-peligro:hover, .btn-cuento:hover, #btn-cursiva:hover {
     transform: translateY(-2px) scale(1.02); /* Efecto de elevación y ligero zoom */
     box-shadow: 0 5px 10px rgba(0,0,0,0.3);
 }
 
-.btn-secundario {
+.btn-secundario, #btn-cursiva {
     background-color: #7f8c8d; /* Gris Nube Medio */
     color: #f0f0f0;
 }
-.btn-secundario:hover {
+.btn-secundario:hover, #btn-cursiva:hover {
     background-color: #95a5a6; /* Gris Nube más claro */
 }
+
+#btn-cursiva i {
+    margin-right: 5px;
+}
+
 
 .btn-accion {
     background-color: #1abc9c; /* Turquesa Brillante */
@@ -108,10 +192,10 @@ h2 i {
     margin-right: 10px;
 }
 
-.btn-grande { 
+.btn-grande {
     padding: 20px 35px;
     font-size: 1.4em;
-    margin-top: 25px !important; 
+    margin-top: 25px !important;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -150,30 +234,30 @@ h2 i {
 
 
 .btn-volver {
-    display: block; 
-    margin: 0 auto 25px auto; 
-    max-width: 280px; 
+    display: block;
+    margin: 0 auto 25px auto;
+    max-width: 280px;
 }
 
 
 /* Cuadrícula para selección de niveles */
 .niveles-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     margin: 25px 0;
 }
 
 .btn-nivel {
     color: #000000; /* Texto negro para contraste con fondos de botón brillantes */
-    padding: 30px 20px; 
-    font-size: 1.2em; 
+    padding: 30px 20px;
+    font-size: 1.2em;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 130px; 
+    min-height: 130px;
 }
 /* Colores específicos para cada botón de nivel */
 .btn-nivel[data-nivel-id="1"] { background-color: #ffc857; } /* Amarillo Sol */
@@ -213,7 +297,6 @@ h2 i {
 #contenido-actividad {
     margin-bottom: 30px;
 }
-
 #instruccion-actividad {
     font-size: 1.3em;
     color: #aeb8c3; /* Gris azulado claro */
@@ -221,7 +304,7 @@ h2 i {
 }
 
 .elemento-grande {
-    font-size: 5em; 
+    font-size: 5em;
     font-weight: 700;
     color: #f5f5f5; /* Blanco Muy Claro */
     padding: 25px;
@@ -235,11 +318,21 @@ h2 i {
     border: 3px solid #1abc9c80; /* Borde Turquesa semi-transparente */
     box-shadow: inset 0 0 15px rgba(0,0,0, 0.2); /* Sombra interior sutil */
     text-shadow: 0 0 8px rgba(255,255,255,0.1);
+    transition: font-family 0.3s ease, font-size 0.3s ease; /* Para transición suave a cursiva */
 }
+
+#elemento-aprender.cursiva {
+    font-family: 'Dancing Script', 'Comic Sans MS', cursive; /* Fuente cursiva amigable */
+    font-size: 5.2em; /* Ajustar si la fuente cursiva es más pequeña o grande */
+    /* Si 'Dancing Script' no carga, 'Comic Sans MS' es un fallback común y amigable, luego 'cursive' genérica */
+    /* Considerar un ligero ajuste de padding o line-height si es necesario para la cursiva */
+}
+
 
 #navegacion-actividad {
     display: flex;
-    justify-content: space-around; 
+    justify-content: space-around; /* Espacia los botones de navegación */
+    align-items: center; /* Para alinear verticalmente el personaje de feedback con los botones */
     margin-top: 25px;
 }
 
@@ -247,7 +340,7 @@ h2 i {
     margin-top: 20px;
     font-size: 1.2em;
     font-weight: bold;
-    min-height: 30px; 
+    min-height: 30px;
     padding: 10px 15px;
     border-radius: 8px;
     color: #f0f0f0;
@@ -285,7 +378,7 @@ h2 i {
     color: #ffffff;
     padding: 25px;
     font-size: 1.15em;
-    text-align: left; 
+    text-align: left;
     border-radius: 12px;
     display: flex;
     flex-direction: column;
@@ -303,7 +396,7 @@ h2 i {
 }
 
 .btn-cuento:hover {
-    background-color: #af7ac5; 
+    background-color: #af7ac5;
     box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4); /* Brillo amatista */
 }
 
@@ -312,17 +405,17 @@ h2 i {
     border: 1px solid #4a5a6a;
     padding: 25px;
     border-radius: 12px;
-    text-align: left; 
-    font-size: 1.25em; 
-    line-height: 1.9; 
+    text-align: left;
+    font-size: 1.25em;
+    line-height: 1.9;
     margin-bottom: 25px;
-    max-height: 60vh; 
-    overflow-y: auto; 
+    max-height: 60vh;
+    overflow-y: auto;
     color: #e0e0e0; /* Gris muy claro para el texto del cuento */
 }
 
 .texto-cuento p {
-    margin-bottom: 1.2em; 
+    margin-bottom: 1.2em;
 }
 
 
@@ -345,7 +438,7 @@ footer {
     color: #a0a0a0; /* Gris medio para texto de footer */
     text-align: center;
     padding: 20px 0;
-    margin-top: auto; 
+    margin-top: auto;
     font-size: 0.95em;
     font-weight: 500;
     border-top: 1px solid #33414e;
@@ -353,65 +446,30 @@ footer {
 
 /* Media Queries (ajustes para móviles) */
 @media (max-width: 768px) {
-    .elemento-grande {
-        font-size: 4em; 
-    }
-    .btn-nivel {
-        font-size: 1.1em;
-        padding: 25px 15px;
-    }
-    .cuentos-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-    .texto-cuento {
-        font-size: 1.15em;
-    }
+    .elemento-grande { font-size: 4em; }
+    #elemento-aprender.cursiva { font-size: 4.2em; } /* Ajuste cursiva para tablet */
+    .btn-nivel { font-size: 1.1em; padding: 25px 15px; }
+    .cuentos-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .texto-cuento { font-size: 1.15em; }
+    .personaje-img { max-width: 100px; }
+    .personaje-pequeno { max-width: 60px; top: 10px; right: 10px;}
+    .personaje-feedback {width: 60px; height: 60px;}
 }
 
 @media (max-width: 600px) {
-    header h1 {
-        font-size: 1.8em;
-    }
-    .pantalla {
-        padding: 20px;
-        border-radius: 15px;
-    }
-    .elemento-grande {
-        font-size: 3em; 
-        padding: 20px;
-        border-radius: 12px;
-    }
-    .btn-nivel {
-        font-size: 1em;
-        padding: 20px 10px;
-        min-height: 100px;
-        border-radius: 10px;
-    }
-    .niveles-grid, .cuentos-grid {
-        grid-template-columns: 1fr; 
-    }
-    .texto-cuento {
-        font-size: 1.1em;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    .btn-grande, .btn-accion, .btn-secundario, .btn-nav, .btn-peligro, .btn-cuento {
-        font-size: 1em; /* Unificar tamaño en móviles para consistencia */
-        padding: 12px 18px;
-        border-radius: 10px;
-    }
-    .btn-grande { /* Ajuste específico para el botón grande */
-         font-size: 1.2em; 
-         padding: 15px 25px;
-    }
-    h2 {
-        font-size: 1.7em;
-    }
-    #instruccion-actividad {
-        font-size: 1.15em;
-    }
+    header h1 { font-size: 1.8em; }
+    .pantalla { padding: 20px; border-radius: 15px; }
+    .elemento-grande { font-size: 3em; padding: 20px; border-radius: 12px; }
+    #elemento-aprender.cursiva { font-size: 3.2em; } /* Ajuste cursiva para móvil */
+    .btn-nivel { font-size: 1em; padding: 20px 10px; min-height: 100px; border-radius: 10px; }
+    .niveles-grid, .cuentos-grid { grid-template-columns: 1fr; }
+    .texto-cuento { font-size: 1.1em; padding: 20px; border-radius: 10px; }
+    .btn-grande, .btn-accion, .btn-secundario, .btn-nav, .btn-peligro, .btn-cuento, #btn-cursiva { font-size: 1em; padding: 12px 18px; border-radius: 10px; }
+    .btn-grande { font-size: 1.2em; padding: 15px 25px; }
+    h2 { font-size: 1.7em; }
+    #instruccion-actividad { font-size: 1.15em; }
+    .personaje-img { max-width: 80px; }
+     #personaje-seleccion-nivel .personaje-img { max-width: 100px; }
+    .personaje-pequeno { max-width: 50px; top: 5px; right: 5px;}
+    .personaje-feedback {width: 50px; height: 50px;}
 }
-
-/* Asegúrate de tener el enlace a Google Font en el <head> de tu HTML:
-   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
-*/
